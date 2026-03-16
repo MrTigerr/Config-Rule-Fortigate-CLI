@@ -1,0 +1,183 @@
+# ══════════════════════════════════════════════════════
+# PHẦN 6 — FIREWALL POLICY: Gán UTM profiles vào 22 policies
+# Chỉ set UTM — không động vào srcintf/dstintf/srcaddr/dstaddr
+# ══════════════════════════════════════════════════════
+
+config firewall policy
+    edit 8
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-General"
+        set dnsfilter-profile "IS-General"
+        set application-list "IS-General"
+    next
+    edit 15
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-General"
+        set dnsfilter-profile "IS-General"
+        set application-list "IS-General"
+    next
+    edit 16
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-General"
+        set dnsfilter-profile "IS-General"
+        set application-list "IS-General"
+    next
+    edit 18
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-General"
+        set dnsfilter-profile "IS-General"
+        set application-list "IS-General"
+    next
+    edit 20
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-General"
+        set dnsfilter-profile "IS-General"
+        set application-list "IS-General"
+    next
+    edit 22
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-TCKT"
+        set dnsfilter-profile "IS-TCKT"
+        set application-list "IS-General"
+    next
+    edit 25
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-ITSM"
+        set dnsfilter-profile "IS-General"
+        set application-list "IS-ITISM"
+    next
+    edit 26
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-Tech"
+        set dnsfilter-profile "IS-General"
+        set application-list "IS-Tech"
+    next
+    edit 28
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-SEO"
+        set dnsfilter-profile "IS-SEO"
+        set application-list "IS-Tech"
+    next
+    edit 29
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-General"
+        set dnsfilter-profile "IS-General"
+        set application-list "IS-General"
+    next
+    edit 30
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-Tech"
+        set dnsfilter-profile "IS-General"
+        set application-list "IS-Tech"
+    next
+    edit 31
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-General"
+        set dnsfilter-profile "IS-General"
+        set application-list "IS-General"
+    next
+    edit 32
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-General"
+        set dnsfilter-profile "IS-General"
+        set application-list "IS-General"
+    next
+    edit 33
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-General"
+        set dnsfilter-profile "IS-General"
+        set application-list "IS-General"
+    next
+    edit 35
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-General"
+        set dnsfilter-profile "IS-General"
+        set application-list "IS-General"
+    next
+    edit 39
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-General"
+        set dnsfilter-profile "IS-General"
+        set application-list "IS-General"
+    next
+    edit 43
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-General"
+        set dnsfilter-profile "IS-General"
+        set application-list "IS-General"
+    next
+    edit 47
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "Web Filter To Guest"
+        set dnsfilter-profile "IS-General"
+        set application-list "IS-General"
+    next
+    edit 51
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-Tech"
+        set dnsfilter-profile "IS-General"
+        set application-list "IS-Tech"
+    next
+    edit 53
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-General"
+        set dnsfilter-profile "IS-General"
+        set application-list "IS-Tech"
+    next
+    edit 100
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-General"
+        set dnsfilter-profile "IS-General"
+        set application-list "IS-General"
+    next
+    edit 101
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-General"
+        set dnsfilter-profile "IS-General"
+        set application-list "IS-General"
+    next
+end

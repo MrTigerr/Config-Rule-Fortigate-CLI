@@ -1,0 +1,9 @@
+# ══════════════════════════════════════════════════════
+# PHẦN 4 — WEBFILTER FORTIGUARD CACHE
+# Bật cache TTL + prefix match để giảm real-time FortiGuard query
+# ══════════════════════════════════════════════════════
+
+config webfilter fortiguard
+    set cache-mode ttl
+    set cache-prefix-match enable
+end

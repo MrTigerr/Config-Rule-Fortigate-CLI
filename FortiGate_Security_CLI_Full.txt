@@ -1,0 +1,2021 @@
+# ══════════════════════════════════════════════════════
+# PHẦN 1 — AV PROFILE
+# Chỉ tạo IS-General: HTTP block, SMTP block, không outbreak-prevention
+# ══════════════════════════════════════════════════════
+
+config antivirus profile
+    edit "IS-General"
+        set comment "Scan files and block viruses."
+        config http
+            set av-scan block
+        end
+        config smtp
+            set av-scan block
+            set executables virus
+        end
+    next
+end
+
+
+# ══════════════════════════════════════════════════════
+# PHẦN 2 — APPLICATION CONTROL
+# IS-General: Block Game/P2P/Proxy/Remote, Allow business apps, log disable
+# IS-Tech: Tương tự IS-General
+# IS-ITISM: Allow thêm RDP (app 15511, 15893)
+# ══════════════════════════════════════════════════════
+
+config application list
+    edit "IS-General"
+        set comment "Deny Game, P2P, Remote Access, Proxy"
+        config entries
+            edit 1
+                set application 39164
+                set action pass
+                set log disable
+            next
+            edit 2
+                set application 48424
+                set action pass
+                set log disable
+            next
+            edit 3
+                set application 17244
+                set action pass
+                set log disable
+            next
+            edit 4
+                set category 2 6 7 8
+            next
+            edit 5
+                set category 3 5 12 15 17 21 22 23 25 28 29 30 31 36
+                set action pass
+                set log disable
+            next
+            edit 6
+                set action pass
+                set log disable
+            next
+        end
+    next
+    edit "IS-Tech"
+        set comment "Deny Game, P2P, Remote Access, Proxy (Allow OpenVPN)"
+        config entries
+            edit 1
+                set application 39164
+                set action pass
+                set log disable
+            next
+            edit 2
+                set application 48424
+                set action pass
+                set log disable
+            next
+            edit 3
+                set application 17244
+                set action pass
+                set log disable
+            next
+            edit 4
+                set category 2 6 7 8
+            next
+            edit 5
+                set category 3 5 12 15 17 21 22 23 25 28 29 30 31 36
+                set action pass
+                set log disable
+            next
+            edit 6
+                set action pass
+                set log disable
+            next
+        end
+    next
+    edit "IS-ITISM"
+        set comment "Allow RDP For JumpServerJumpServer"
+        config entries
+            edit 1
+                set application 15511
+                set action pass
+                set log disable
+            next
+            edit 2
+                set application 15893
+                set action pass
+                set log disable
+            next
+            edit 3
+                set application 17244
+                set action pass
+                set log disable
+            next
+            edit 4
+                set application 39164
+                set action pass
+                set log disable
+            next
+            edit 5
+                set application 48424
+                set action pass
+                set log disable
+            next
+            edit 6
+                set category 2 6 7 8
+            next
+            edit 7
+                set category 3 5 12 15 17 21 22 23 25 28 29 30 31 36
+                set action pass
+                set log disable
+            next
+        end
+    next
+end
+
+
+# ══════════════════════════════════════════════════════
+# PHẦN 3 — WEBFILTER PROFILES
+# IS-General, IS-Tech, IS-ITSM, IS-SEO, IS-TCKT, Web Filter To Guest
+# block-invalid-url đã được unset (tối ưu CPU)
+# ══════════════════════════════════════════════════════
+
+config webfilter profile
+    edit "Web Filter To Guest"
+        set comment "Block Guest To Domain TopCV Internal"
+        config ftgd-wf
+            set options error-allow
+            config filters
+                edit 1
+                    set action block
+                next
+                edit 2
+                    set category 1
+                    set action block
+                next
+                edit 3
+                    set category 3
+                    set action block
+                next
+                edit 4
+                    set category 4
+                    set action block
+                next
+                edit 5
+                    set category 5
+                    set action block
+                next
+                edit 6
+                    set category 6
+                    set action block
+                next
+                edit 7
+                    set category 12
+                    set action block
+                next
+                edit 8
+                    set category 59
+                    set action block
+                next
+                edit 9
+                    set category 62
+                    set action block
+                next
+                edit 10
+                    set category 83
+                    set action block
+                next
+                edit 11
+                    set category 96
+                    set action block
+                next
+                edit 12
+                    set category 98
+                    set action block
+                next
+                edit 13
+                    set category 99
+                    set action block
+                next
+                edit 14
+                    set category 2
+                    set action block
+                next
+                edit 15
+                    set category 7
+                    set action block
+                next
+                edit 16
+                    set category 8
+                    set action block
+                next
+                edit 17
+                    set category 9
+                    set action block
+                next
+                edit 18
+                    set category 11
+                    set action block
+                next
+                edit 19
+                    set category 13
+                    set action block
+                next
+                edit 20
+                    set category 14
+                    set action block
+                next
+                edit 21
+                    set category 15
+                    set action block
+                next
+                edit 22
+                    set category 16
+                    set action block
+                next
+                edit 23
+                    set category 57
+                    set action block
+                next
+                edit 24
+                    set category 63
+                    set action block
+                next
+                edit 25
+                    set category 64
+                    set action block
+                next
+                edit 26
+                    set category 65
+                    set action block
+                next
+                edit 27
+                    set category 66
+                    set action block
+                next
+                edit 28
+                    set category 67
+                    set action block
+                next
+                edit 29
+                    set category 72
+                    set action block
+                next
+                edit 30
+                    set category 26
+                    set action block
+                next
+                edit 31
+                    set category 61
+                    set action block
+                next
+                edit 32
+                    set category 86
+                    set action block
+                next
+                edit 33
+                    set category 88
+                    set action block
+                next
+                edit 34
+                    set category 90
+                    set action block
+                next
+                edit 35
+                    set category 91
+                    set action block
+                next
+                edit 36
+                    set category 20
+                    set action block
+                next
+                edit 37
+                    set category 55
+                    set action block
+                next
+                edit 38
+                    set category 85
+                    set action block
+                next
+                edit 39
+                    set category 56
+                    set action block
+                next
+                edit 40
+                    set category 93
+                    set action block
+                next
+                edit 41
+                    set category 97
+                    set action block
+                next
+                edit 42
+                    set category 101
+                    set action block
+                next
+                edit 43
+                    set category 141
+                    set log disable
+                next
+                edit 44
+                    set category 140
+                    set action block
+                next
+                edit 45
+                    set category 142
+                    set action block
+                    set log disable
+                next
+                edit 46
+                    set category 143
+                    set log disable
+                next
+                edit 47
+                    set category 144
+                    set action block
+                next
+                edit 48
+                    set category 145
+                    set log disable
+                next
+            end
+        end
+    next
+    edit "IS-General"
+        set comment "IS-General-Web Filter"
+        set options block-invalid-url
+        config ftgd-wf
+            set options error-allow
+            config filters
+                edit 27
+                    set category 1
+                    set action block
+                next
+                edit 28
+                    set category 3
+                    set action block
+                next
+                edit 29
+                    set category 4
+                    set action block
+                next
+                edit 30
+                    set category 5
+                    set action block
+                next
+                edit 31
+                    set category 6
+                    set action block
+                next
+                edit 32
+                    set category 12
+                    set action block
+                next
+                edit 33
+                    set category 59
+                    set action block
+                next
+                edit 34
+                    set category 62
+                    set action block
+                next
+                edit 19
+                    set category 83
+                    set action block
+                next
+                edit 24
+                    set category 96
+                    set action block
+                next
+                edit 25
+                    set category 98
+                    set action block
+                next
+                edit 26
+                    set category 99
+                    set action block
+                next
+                edit 2
+                    set category 2
+                    set action block
+                next
+                edit 3
+                    set category 7
+                    set action block
+                next
+                edit 4
+                    set category 8
+                    set action block
+                next
+                edit 5
+                    set category 9
+                    set action block
+                next
+                edit 6
+                    set category 11
+                    set action block
+                next
+                edit 7
+                    set category 13
+                    set action block
+                next
+                edit 8
+                    set category 14
+                    set action block
+                next
+                edit 9
+                    set category 15
+                    set action block
+                next
+                edit 10
+                    set category 16
+                    set action block
+                next
+                edit 12
+                    set category 57
+                    set action block
+                next
+                edit 14
+                    set category 63
+                    set action block
+                next
+                edit 15
+                    set category 64
+                    set action block
+                next
+                edit 16
+                    set category 65
+                    set action block
+                next
+                edit 17
+                    set category 66
+                    set action block
+                next
+                edit 18
+                    set category 67
+                    set action block
+                next
+                edit 35
+                    set category 19
+                    set action block
+                next
+                edit 37
+                    set category 72
+                    set action block
+                next
+                edit 11
+                    set category 26
+                    set action block
+                next
+                edit 13
+                    set category 61
+                    set action block
+                next
+                edit 20
+                    set category 86
+                    set action block
+                next
+                edit 21
+                    set category 88
+                    set action block
+                next
+                edit 23
+                    set category 91
+                    set action block
+                next
+                edit 38
+                    set category 20
+                    set action block
+                next
+                edit 39
+                    set category 55
+                    set action block
+                next
+                edit 40
+                    set category 85
+                    set action block
+                next
+                edit 41
+                    set category 56
+                    set action block
+                next
+                edit 42
+                    set category 93
+                    set action block
+                next
+                edit 44
+                    set category 101
+                    set action block
+                next
+                edit 46
+                    set category 141
+                    set log disable
+                next
+                edit 47
+                    set category 140
+                    set log disable
+                next
+                edit 45
+                    set category 142
+                    set action block
+                next
+                edit 48
+                    set category 143
+                    set log disable
+                next
+                edit 49
+                    set category 145
+                    set log disable
+                next
+                edit 50
+                    set category 144
+                    set action block
+                next
+            end
+        end
+    next
+    edit "IS-Tech"
+        set options block-invalid-url
+        config ftgd-wf
+            set options error-allow
+            config filters
+                edit 1
+                    set action block
+                next
+                edit 27
+                    set category 1
+                    set action block
+                next
+                edit 28
+                    set category 3
+                    set action block
+                next
+                edit 29
+                    set category 4
+                    set action block
+                next
+                edit 30
+                    set category 5
+                    set action block
+                next
+                edit 31
+                    set category 6
+                    set action block
+                next
+                edit 32
+                    set category 12
+                    set action block
+                next
+                edit 33
+                    set category 59
+                    set action block
+                next
+                edit 34
+                    set category 62
+                    set action block
+                next
+                edit 19
+                    set category 83
+                    set action block
+                next
+                edit 24
+                    set category 96
+                    set action block
+                next
+                edit 25
+                    set category 98
+                    set action block
+                next
+                edit 26
+                    set category 99
+                    set action block
+                next
+                edit 2
+                    set category 2
+                    set action block
+                next
+                edit 3
+                    set category 7
+                    set action block
+                next
+                edit 4
+                    set category 8
+                    set action block
+                next
+                edit 5
+                    set category 9
+                    set action block
+                next
+                edit 6
+                    set category 11
+                    set action block
+                next
+                edit 7
+                    set category 13
+                    set action block
+                next
+                edit 8
+                    set category 14
+                    set action block
+                next
+                edit 9
+                    set category 15
+                    set action block
+                next
+                edit 10
+                    set category 16
+                    set action block
+                next
+                edit 12
+                    set category 57
+                    set action block
+                next
+                edit 14
+                    set category 63
+                    set action block
+                next
+                edit 15
+                    set category 64
+                    set action block
+                next
+                edit 16
+                    set category 65
+                    set action block
+                next
+                edit 17
+                    set category 66
+                    set action block
+                next
+                edit 18
+                    set category 67
+                    set action block
+                next
+                edit 35
+                    set category 19
+                    set action block
+                next
+                edit 37
+                    set category 72
+                    set action block
+                next
+                edit 11
+                    set category 26
+                    set action block
+                next
+                edit 13
+                    set category 61
+                    set action block
+                next
+                edit 20
+                    set category 86
+                    set action block
+                next
+                edit 21
+                    set category 88
+                    set action block
+                next
+                edit 22
+                    set category 90
+                    set action block
+                next
+                edit 23
+                    set category 91
+                    set action block
+                next
+                edit 38
+                    set category 20
+                    set action block
+                next
+                edit 39
+                    set category 55
+                    set action block
+                next
+                edit 40
+                    set category 85
+                    set action block
+                next
+                edit 41
+                    set category 56
+                    set action block
+                next
+                edit 42
+                    set category 93
+                    set action block
+                next
+                edit 43
+                    set category 97
+                    set action block
+                next
+                edit 44
+                    set category 101
+                    set action block
+                next
+                edit 46
+                    set category 141
+                    set log disable
+                next
+                edit 47
+                    set category 140
+                    set log disable
+                next
+                edit 45
+                    set category 142
+                    set action block
+                next
+                edit 48
+                    set category 143
+                    set log disable
+                next
+                edit 49
+                    set category 145
+                    set log disable
+                next
+                edit 50
+                    set category 144
+                    set action block
+                next
+            end
+        end
+    next
+    edit "IS-ITSM"
+        set comment "IT Support"
+        set options block-invalid-url
+        config ftgd-wf
+            set options error-allow
+            config filters
+                edit 1
+                    set action block
+                next
+                edit 27
+                    set category 1
+                    set action block
+                next
+                edit 28
+                    set category 3
+                    set action block
+                next
+                edit 29
+                    set category 4
+                    set action block
+                next
+                edit 30
+                    set category 5
+                    set action block
+                next
+                edit 31
+                    set category 6
+                    set action block
+                next
+                edit 32
+                    set category 12
+                    set action block
+                next
+                edit 33
+                    set category 59
+                    set action block
+                next
+                edit 34
+                    set category 62
+                    set action block
+                next
+                edit 19
+                    set category 83
+                    set action block
+                next
+                edit 24
+                    set category 96
+                    set action block
+                next
+                edit 25
+                    set category 98
+                    set action block
+                next
+                edit 26
+                    set category 99
+                    set action block
+                next
+                edit 2
+                    set category 2
+                    set action block
+                next
+                edit 3
+                    set category 7
+                    set action block
+                next
+                edit 4
+                    set category 8
+                    set action block
+                next
+                edit 5
+                    set category 9
+                    set action block
+                next
+                edit 6
+                    set category 11
+                    set action block
+                next
+                edit 7
+                    set category 13
+                    set action block
+                next
+                edit 8
+                    set category 14
+                    set action block
+                next
+                edit 9
+                    set category 15
+                    set action block
+                next
+                edit 10
+                    set category 16
+                    set action block
+                next
+                edit 12
+                    set category 57
+                    set action block
+                next
+                edit 14
+                    set category 63
+                    set action block
+                next
+                edit 15
+                    set category 64
+                    set action block
+                next
+                edit 16
+                    set category 65
+                    set action block
+                next
+                edit 17
+                    set category 66
+                    set action block
+                next
+                edit 18
+                    set category 67
+                    set action block
+                next
+                edit 35
+                    set category 19
+                    set action block
+                next
+                edit 37
+                    set category 72
+                    set action block
+                next
+                edit 11
+                    set category 26
+                    set action block
+                next
+                edit 13
+                    set category 61
+                    set action block
+                next
+                edit 20
+                    set category 86
+                    set action block
+                next
+                edit 21
+                    set category 88
+                    set action block
+                next
+                edit 22
+                    set category 90
+                    set action block
+                next
+                edit 23
+                    set category 91
+                    set action block
+                next
+                edit 38
+                    set category 20
+                    set action block
+                next
+                edit 39
+                    set category 55
+                    set action block
+                next
+                edit 40
+                    set category 85
+                    set action block
+                next
+                edit 41
+                    set category 56
+                    set action block
+                next
+                edit 43
+                    set category 97
+                    set action block
+                next
+                edit 44
+                    set category 101
+                    set action block
+                next
+                edit 46
+                    set category 141
+                    set log disable
+                next
+                edit 48
+                    set category 143
+                    set log disable
+                next
+                edit 47
+                    set category 140
+                    set log disable
+                next
+                edit 45
+                    set category 142
+                    set action block
+                next
+                edit 49
+                    set category 144
+                    set log disable
+                next
+                edit 50
+                    set category 145
+                    set log disable
+                next
+            end
+        end
+    next
+    edit "IS-SEO"
+        set options block-invalid-url
+        config ftgd-wf
+            set options error-allow
+            config filters
+                edit 27
+                    set category 1
+                    set action block
+                next
+                edit 28
+                    set category 3
+                    set action block
+                next
+                edit 29
+                    set category 4
+                    set action block
+                next
+                edit 30
+                    set category 5
+                    set action block
+                next
+                edit 31
+                    set category 6
+                    set action block
+                next
+                edit 32
+                    set category 12
+                    set action block
+                next
+                edit 33
+                    set category 59
+                    set action block
+                next
+                edit 34
+                    set category 62
+                    set action block
+                next
+                edit 19
+                    set category 83
+                    set action block
+                next
+                edit 24
+                    set category 96
+                    set action block
+                next
+                edit 25
+                    set category 98
+                    set action block
+                next
+                edit 26
+                    set category 99
+                    set action block
+                next
+                edit 2
+                    set category 2
+                    set action block
+                next
+                edit 3
+                    set category 7
+                    set action block
+                next
+                edit 4
+                    set category 8
+                    set action block
+                next
+                edit 5
+                    set category 9
+                    set action block
+                next
+                edit 6
+                    set category 11
+                    set action block
+                next
+                edit 7
+                    set category 13
+                    set action block
+                next
+                edit 8
+                    set category 14
+                    set action block
+                next
+                edit 9
+                    set category 15
+                    set action block
+                next
+                edit 10
+                    set category 16
+                    set action block
+                next
+                edit 12
+                    set category 57
+                    set action block
+                next
+                edit 14
+                    set category 63
+                    set action block
+                next
+                edit 15
+                    set category 64
+                    set action block
+                next
+                edit 16
+                    set category 65
+                    set action block
+                next
+                edit 17
+                    set category 66
+                    set action block
+                next
+                edit 18
+                    set category 67
+                    set action block
+                next
+                edit 35
+                    set category 19
+                    set action block
+                next
+                edit 37
+                    set category 72
+                    set action block
+                next
+                edit 11
+                    set category 26
+                    set action block
+                next
+                edit 13
+                    set category 61
+                    set action block
+                next
+                edit 20
+                    set category 86
+                    set action block
+                next
+                edit 21
+                    set category 88
+                    set action block
+                next
+                edit 22
+                    set category 90
+                    set action block
+                next
+                edit 23
+                    set category 91
+                    set action block
+                next
+                edit 38
+                    set category 20
+                    set action block
+                next
+                edit 40
+                    set category 85
+                    set action block
+                next
+                edit 44
+                    set category 101
+                    set action block
+                next
+                edit 46
+                    set category 141
+                    set log disable
+                next
+                edit 48
+                    set category 143
+                    set log disable
+                next
+                edit 47
+                    set category 140
+                    set log disable
+                next
+                edit 45
+                    set category 142
+                    set action block
+                next
+                edit 49
+                    set category 145
+                    set log disable
+                next
+                edit 50
+                    set category 144
+                    set action block
+                next
+            end
+        end
+    next
+    edit "IS-TCKT"
+        set comment "Monitoring WebHosting, Meaningless Content"
+        set options block-invalid-url
+        config ftgd-wf
+            set options error-allow
+            config filters
+                edit 27
+                    set category 1
+                    set action block
+                next
+                edit 28
+                    set category 3
+                    set action block
+                next
+                edit 29
+                    set category 4
+                    set action block
+                next
+                edit 30
+                    set category 5
+                    set action block
+                next
+                edit 31
+                    set category 6
+                    set action block
+                next
+                edit 32
+                    set category 12
+                    set action block
+                next
+                edit 33
+                    set category 59
+                    set action block
+                next
+                edit 34
+                    set category 62
+                    set action block
+                next
+                edit 19
+                    set category 83
+                    set action block
+                next
+                edit 24
+                    set category 96
+                    set action block
+                next
+                edit 25
+                    set category 98
+                    set action block
+                next
+                edit 26
+                    set category 99
+                    set action block
+                next
+                edit 2
+                    set category 2
+                    set action block
+                next
+                edit 3
+                    set category 7
+                    set action block
+                next
+                edit 4
+                    set category 8
+                    set action block
+                next
+                edit 5
+                    set category 9
+                    set action block
+                next
+                edit 6
+                    set category 11
+                    set action block
+                next
+                edit 7
+                    set category 13
+                    set action block
+                next
+                edit 8
+                    set category 14
+                    set action block
+                next
+                edit 9
+                    set category 15
+                    set action block
+                next
+                edit 10
+                    set category 16
+                    set action block
+                next
+                edit 12
+                    set category 57
+                    set action block
+                next
+                edit 14
+                    set category 63
+                    set action block
+                next
+                edit 15
+                    set category 64
+                    set action block
+                next
+                edit 16
+                    set category 65
+                    set action block
+                next
+                edit 17
+                    set category 66
+                    set action block
+                next
+                edit 18
+                    set category 67
+                    set action block
+                next
+                edit 35
+                    set category 19
+                    set action block
+                next
+                edit 37
+                    set category 72
+                    set action block
+                next
+                edit 11
+                    set category 26
+                    set action block
+                next
+                edit 13
+                    set category 61
+                    set action block
+                next
+                edit 20
+                    set category 86
+                    set action block
+                next
+                edit 21
+                    set category 88
+                    set action block
+                next
+                edit 38
+                    set category 20
+                    set action block
+                next
+                edit 40
+                    set category 85
+                    set action block
+                next
+                edit 42
+                    set category 93
+                    set action block
+                next
+                edit 44
+                    set category 101
+                    set action block
+                next
+                edit 46
+                    set category 141
+                    set log disable
+                next
+                edit 48
+                    set category 143
+                    set log disable
+                next
+                edit 47
+                    set category 140
+                    set log disable
+                next
+                edit 45
+                    set category 142
+                    set action block
+                next
+                edit 49
+                    set category 145
+                    set log disable
+                next
+                edit 43
+                    set category 144
+                    set action block
+                next
+            end
+        end
+    next
+end
+
+
+# ══════════════════════════════════════════════════════
+# PHẦN 4 — WEBFILTER FORTIGUARD CACHE
+# Bật cache TTL + prefix match để giảm real-time FortiGuard query
+# ══════════════════════════════════════════════════════
+
+config webfilter fortiguard
+    set cache-mode ttl
+    set cache-prefix-match enable
+end
+
+
+# ══════════════════════════════════════════════════════
+# PHẦN 5 — DNS FILTER PROFILES
+# IS-General, IS-SEO, IS-TCKT
+# log-all-domain disable (giảm log overhead)
+# block-botnet enable
+# ══════════════════════════════════════════════════════
+
+config dnsfilter profile
+    edit "IS-General"
+        config domain-filter
+            set domain-filter-table 4
+        end
+        config ftgd-dns
+            set options error-allow
+            config filters
+                edit 2
+                    set category 1
+                    set action block
+                next
+                edit 3
+                    set category 3
+                    set action block
+                next
+                edit 4
+                    set category 4
+                    set action block
+                next
+                edit 5
+                    set category 5
+                    set action block
+                next
+                edit 6
+                    set category 6
+                    set action block
+                next
+                edit 7
+                    set category 12
+                    set action block
+                next
+                edit 8
+                    set category 59
+                    set action block
+                next
+                edit 9
+                    set category 62
+                    set action block
+                next
+                edit 10
+                    set category 83
+                    set action block
+                next
+                edit 11
+                    set category 96
+                    set action block
+                next
+                edit 12
+                    set category 98
+                    set action block
+                next
+                edit 13
+                    set category 99
+                    set action block
+                next
+                edit 14
+                    set category 2
+                    set action block
+                next
+                edit 15
+                    set category 7
+                    set action block
+                next
+                edit 16
+                    set category 8
+                    set action block
+                next
+                edit 17
+                    set category 9
+                    set action block
+                next
+                edit 18
+                    set category 11
+                    set action block
+                next
+                edit 19
+                    set category 13
+                    set action block
+                next
+                edit 20
+                    set category 14
+                    set action block
+                next
+                edit 21
+                    set category 15
+                    set action block
+                next
+                edit 22
+                    set category 16
+                    set action block
+                next
+                edit 23
+                    set category 57
+                    set action block
+                next
+                edit 24
+                    set category 63
+                    set action block
+                next
+                edit 25
+                    set category 64
+                    set action block
+                next
+                edit 26
+                    set category 65
+                    set action block
+                next
+                edit 27
+                    set category 66
+                    set action block
+                next
+                edit 28
+                    set category 67
+                    set action block
+                next
+                edit 29
+                    set category 19
+                    set action block
+                next
+                edit 30
+                    set category 72
+                    set action block
+                next
+                edit 31
+                    set category 26
+                    set action block
+                next
+                edit 32
+                    set category 61
+                    set action block
+                next
+                edit 33
+                    set category 86
+                    set action block
+                next
+                edit 34
+                    set category 88
+                    set action block
+                next
+                edit 36
+                    set category 91
+                    set action block
+                next
+                edit 37
+                    set category 20
+                    set action block
+                next
+                edit 38
+                    set category 55
+                    set action block
+                next
+                edit 39
+                    set category 85
+                    set action block
+                next
+                edit 40
+                    set category 56
+                    set action block
+                next
+                edit 41
+                    set category 93
+                    set action block
+                next
+                edit 43
+                    set category 101
+                    set action block
+                next
+            end
+        end
+        set block-botnet enable
+    next
+    edit "IS-SEO"
+        config domain-filter
+            set domain-filter-table 5
+        end
+        config ftgd-dns
+            set options error-allow
+            config filters
+                edit 2
+                    set category 1
+                    set action block
+                next
+                edit 3
+                    set category 3
+                    set action block
+                next
+                edit 4
+                    set category 4
+                    set action block
+                next
+                edit 5
+                    set category 5
+                    set action block
+                next
+                edit 6
+                    set category 6
+                    set action block
+                next
+                edit 7
+                    set category 12
+                    set action block
+                next
+                edit 8
+                    set category 59
+                    set action block
+                next
+                edit 9
+                    set category 62
+                    set action block
+                next
+                edit 10
+                    set category 83
+                    set action block
+                next
+                edit 11
+                    set category 96
+                    set action block
+                next
+                edit 12
+                    set category 98
+                    set action block
+                next
+                edit 13
+                    set category 99
+                    set action block
+                next
+                edit 14
+                    set category 2
+                    set action block
+                next
+                edit 15
+                    set category 7
+                    set action block
+                next
+                edit 16
+                    set category 8
+                    set action block
+                next
+                edit 17
+                    set category 9
+                    set action block
+                next
+                edit 18
+                    set category 11
+                    set action block
+                next
+                edit 19
+                    set category 13
+                    set action block
+                next
+                edit 20
+                    set category 14
+                    set action block
+                next
+                edit 21
+                    set category 15
+                    set action block
+                next
+                edit 22
+                    set category 16
+                    set action block
+                next
+                edit 23
+                    set category 57
+                    set action block
+                next
+                edit 24
+                    set category 63
+                    set action block
+                next
+                edit 25
+                    set category 64
+                    set action block
+                next
+                edit 26
+                    set category 65
+                    set action block
+                next
+                edit 27
+                    set category 66
+                    set action block
+                next
+                edit 28
+                    set category 67
+                    set action block
+                next
+                edit 29
+                    set category 19
+                    set action block
+                next
+                edit 30
+                    set category 72
+                    set action block
+                next
+                edit 31
+                    set category 26
+                    set action block
+                next
+                edit 32
+                    set category 61
+                    set action block
+                next
+                edit 33
+                    set category 86
+                    set action block
+                next
+                edit 34
+                    set category 88
+                    set action block
+                next
+                edit 35
+                    set category 90
+                    set action block
+                next
+                edit 36
+                    set category 91
+                    set action block
+                next
+                edit 37
+                    set category 20
+                    set action block
+                next
+                edit 39
+                    set category 85
+                    set action block
+                next
+                edit 43
+                    set category 101
+                    set action block
+                next
+            end
+        end
+        set block-botnet enable
+    next
+    edit "IS-TCKT"
+        set comment "Monitoring Web Hosting, Meaningless Content"
+        config domain-filter
+            set domain-filter-table 7
+        end
+        config ftgd-dns
+            set options error-allow
+            config filters
+                edit 2
+                    set category 1
+                    set action block
+                next
+                edit 3
+                    set category 3
+                    set action block
+                next
+                edit 4
+                    set category 4
+                    set action block
+                next
+                edit 5
+                    set category 5
+                    set action block
+                next
+                edit 6
+                    set category 6
+                    set action block
+                next
+                edit 7
+                    set category 12
+                    set action block
+                next
+                edit 8
+                    set category 59
+                    set action block
+                next
+                edit 9
+                    set category 62
+                    set action block
+                next
+                edit 10
+                    set category 83
+                    set action block
+                next
+                edit 11
+                    set category 96
+                    set action block
+                next
+                edit 12
+                    set category 98
+                    set action block
+                next
+                edit 13
+                    set category 99
+                    set action block
+                next
+                edit 14
+                    set category 2
+                    set action block
+                next
+                edit 15
+                    set category 7
+                    set action block
+                next
+                edit 16
+                    set category 8
+                    set action block
+                next
+                edit 17
+                    set category 9
+                    set action block
+                next
+                edit 18
+                    set category 11
+                    set action block
+                next
+                edit 19
+                    set category 13
+                    set action block
+                next
+                edit 20
+                    set category 14
+                    set action block
+                next
+                edit 21
+                    set category 15
+                    set action block
+                next
+                edit 22
+                    set category 16
+                    set action block
+                next
+                edit 23
+                    set category 57
+                    set action block
+                next
+                edit 24
+                    set category 63
+                    set action block
+                next
+                edit 25
+                    set category 64
+                    set action block
+                next
+                edit 26
+                    set category 65
+                    set action block
+                next
+                edit 27
+                    set category 66
+                    set action block
+                next
+                edit 28
+                    set category 67
+                    set action block
+                next
+                edit 29
+                    set category 19
+                    set action block
+                next
+                edit 30
+                    set category 72
+                    set action block
+                next
+                edit 31
+                    set category 26
+                    set action block
+                next
+                edit 32
+                    set category 61
+                    set action block
+                next
+                edit 33
+                    set category 86
+                    set action block
+                next
+                edit 34
+                    set category 88
+                    set action block
+                next
+                edit 37
+                    set category 20
+                    set action block
+                next
+                edit 39
+                    set category 85
+                    set action block
+                next
+                edit 41
+                    set category 93
+                    set action block
+                next
+                edit 43
+                    set category 101
+                    set action block
+                next
+            end
+        end
+        set block-botnet enable
+    next
+end
+
+
+# ══════════════════════════════════════════════════════
+# PHẦN 6 — FIREWALL POLICY: Gán UTM profiles vào 22 policies
+# Chỉ set UTM — không động vào srcintf/dstintf/srcaddr/dstaddr
+# ══════════════════════════════════════════════════════
+
+config firewall policy
+    edit 8
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-General"
+        set dnsfilter-profile "IS-General"
+        set application-list "IS-General"
+    next
+    edit 15
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-General"
+        set dnsfilter-profile "IS-General"
+        set application-list "IS-General"
+    next
+    edit 16
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-General"
+        set dnsfilter-profile "IS-General"
+        set application-list "IS-General"
+    next
+    edit 18
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-General"
+        set dnsfilter-profile "IS-General"
+        set application-list "IS-General"
+    next
+    edit 20
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-General"
+        set dnsfilter-profile "IS-General"
+        set application-list "IS-General"
+    next
+    edit 22
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-TCKT"
+        set dnsfilter-profile "IS-TCKT"
+        set application-list "IS-General"
+    next
+    edit 25
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-ITSM"
+        set dnsfilter-profile "IS-General"
+        set application-list "IS-ITISM"
+    next
+    edit 26
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-Tech"
+        set dnsfilter-profile "IS-General"
+        set application-list "IS-Tech"
+    next
+    edit 28
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-SEO"
+        set dnsfilter-profile "IS-SEO"
+        set application-list "IS-Tech"
+    next
+    edit 29
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-General"
+        set dnsfilter-profile "IS-General"
+        set application-list "IS-General"
+    next
+    edit 30
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-Tech"
+        set dnsfilter-profile "IS-General"
+        set application-list "IS-Tech"
+    next
+    edit 31
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-General"
+        set dnsfilter-profile "IS-General"
+        set application-list "IS-General"
+    next
+    edit 32
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-General"
+        set dnsfilter-profile "IS-General"
+        set application-list "IS-General"
+    next
+    edit 33
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-General"
+        set dnsfilter-profile "IS-General"
+        set application-list "IS-General"
+    next
+    edit 35
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-General"
+        set dnsfilter-profile "IS-General"
+        set application-list "IS-General"
+    next
+    edit 39
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-General"
+        set dnsfilter-profile "IS-General"
+        set application-list "IS-General"
+    next
+    edit 43
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-General"
+        set dnsfilter-profile "IS-General"
+        set application-list "IS-General"
+    next
+    edit 47
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "Web Filter To Guest"
+        set dnsfilter-profile "IS-General"
+        set application-list "IS-General"
+    next
+    edit 51
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-Tech"
+        set dnsfilter-profile "IS-General"
+        set application-list "IS-Tech"
+    next
+    edit 53
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-General"
+        set dnsfilter-profile "IS-General"
+        set application-list "IS-Tech"
+    next
+    edit 100
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-General"
+        set dnsfilter-profile "IS-General"
+        set application-list "IS-General"
+    next
+    edit 101
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set av-profile "IS-General"
+        set webfilter-profile "IS-General"
+        set dnsfilter-profile "IS-General"
+        set application-list "IS-General"
+    next
+end
+
+
+# ══════════════════════════════════════════════════════
+# PHẦN 7 — TỐI ƯU THÊM
+# Tắt log-all-domain, đã apply trong DNS profile bên trên
+# Nếu cần apply riêng:
+# ══════════════════════════════════════════════════════
+
+config dnsfilter profile
+    edit "IS-General"
+        set log-all-domain disable
+    next
+    edit "IS-SEO"
+        set log-all-domain disable
+    next
+    edit "IS-TCKT"
+        set log-all-domain disable
+    next
+end
