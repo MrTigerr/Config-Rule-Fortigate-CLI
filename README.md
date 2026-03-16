@@ -82,3 +82,4 @@ Paste từng file vào terminal FortiGate theo thứ tự:
 ---
 
 *Cập nhật: 07/03/2026 | CONFIDENTIAL — TopCV Internal Use Only*
+# Config-Rule-Fortigate-CLI
