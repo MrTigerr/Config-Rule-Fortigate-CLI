@@ -1,434 +1,503 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html class="dark" lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FortiGate Config Tool v5</title>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FortiGate Config Tool v7</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=Roboto+Mono&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script>
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        "on-surface": "#f6f7ff",
+        "surface-bright": "#1a2b45",
+        "outline": "#93b3e9",
+        "primary-container": "#2160a0",
+        "on-primary-container": "#f6f7ff",
+        "surface-dim": "#0a1a2f",
+        "background": "#040e1e",
+        "surface-container": "#0a1a2f",
+        "surface-container-highest": "#1e2b44",
+        "on-surface-variant": "#93b3e9",
+        "error": "#f2716d",
+        "surface-container-high": "#14253d",
+        "on-background": "#f6f7ff",
+        "primary-dim": "#0a5493",
+        "inverse-primary": "#83b9ff",
+        "surface-variant": "#1e2b44",
+        "on-primary": "#f6f7ff",
+        "surface-container-lowest": "#07162b",
+        "surface-container-low": "#091a32",
+        "outline-variant": "#3f6091",
+        "secondary": "#93b3e9",
+        "primary": "#83b9ff"
+      },
+      fontFamily: {
+        "headline": ["Manrope"],
+        "body": ["Inter"],
+        "label": ["Inter"],
+        "mono": ["Roboto Mono"]
+      },
+      borderRadius: {"DEFAULT":"0.125rem","lg":"0.25rem","xl":"0.5rem","full":"0.75rem"},
+    },
+  },
+}
+</script>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;font-size:13px;background:#f0f2f5;color:#1a1a1a;height:100vh;display:flex;flex-direction:column;overflow:hidden}
-/* Header */
-header{background:#1F4E79;padding:0 20px;height:48px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-header h1{color:#fff;font-size:14px;font-weight:600}
-.ver{color:#93b8d4;font-size:11px}
-/* Tabs */
-.tabbar{display:flex;background:#fff;border-bottom:1px solid #e2e8f0;padding:0 16px;flex-shrink:0}
-.tb{padding:10px 18px;font-size:12px;font-weight:500;cursor:pointer;color:#64748b;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s}
-.tb.active{color:#1F4E79;border-bottom-color:#1F4E79}
-.tb:hover:not(.active){color:#374151;background:#f8fafc}
-/* Layout */
-.layout{display:grid;grid-template-columns:1fr 1fr;flex:1;min-height:0;overflow:hidden}
-.left{overflow-y:auto;padding:12px 14px;border-right:1px solid #e2e8f0;background:#f8fafc}
-.left::-webkit-scrollbar{width:5px}
-.left::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}
-/* Accordion */
-.ac{background:#fff;border:1px solid #e2e8f0;border-radius:8px;margin-bottom:8px;overflow:hidden}
-.ac-hdr{display:flex;align-items:center;justify-content:space-between;padding:9px 13px;cursor:pointer;user-select:none}
-.ac-hdr:hover{background:#f8fafc}
-.ac-left{display:flex;align-items:center;gap:8px}
-.ac-num{font-size:10px;font-weight:700;background:#dbeafe;color:#1e40af;padding:2px 7px;border-radius:10px}
-.ac-title{font-size:12px;font-weight:600}
-.ac-sub{font-size:10px;color:#64748b;margin-top:1px}
-.ac-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
-.ac-arr{font-size:10px;color:#94a3b8;transition:transform .2s}
-.ac-arr.open{transform:rotate(180deg)}
-.tog{display:flex;align-items:center;gap:4px;cursor:pointer;user-select:none}
-.tog input{width:13px;height:13px;cursor:pointer;accent-color:#1F4E79}
-.tog span{font-size:11px;color:#64748b;white-space:nowrap}
-.ac-body{display:none;border-top:1px solid #e2e8f0}
-.ac-body.open{display:block}
-/* Profile Manager */
-.pm{display:flex;align-items:center;gap:6px;padding:8px 12px;background:#f1f5f9;border-bottom:1px solid #e2e8f0;flex-wrap:wrap}
-.pm-lbl{font-size:10px;font-weight:600;color:#475569;flex-shrink:0}
-.chip{display:inline-flex;align-items:center;gap:4px;border:1px solid #cbd5e1;border-radius:14px;padding:3px 8px 3px 4px;font-size:11px;cursor:pointer;transition:all .15s;white-space:nowrap;background:#fff}
-.chip:hover{border-color:#93c5fd}
-.chip.active{border-color:#1F4E79;background:#eff6ff}
-.chip.exported{border-style:solid}
-.chip-exp{width:12px;height:12px;cursor:pointer;accent-color:#1F4E79}
-.chip-name{font-weight:500;color:#1a1a1a;padding:0 2px;max-width:120px;overflow:hidden;text-overflow:ellipsis}
-.chip-del{font-size:13px;color:#94a3b8;border:none;background:transparent;cursor:pointer;padding:0 1px;line-height:1}
-.chip-del:hover{color:#ef4444}
-.btn-add{font-size:11px;padding:3px 10px;border:1px dashed #94a3b8;border-radius:12px;background:transparent;color:#64748b;cursor:pointer}
-.btn-add:hover{border-color:#3b82f6;color:#3b82f6}
-.pm-hint{font-size:11px;color:#94a3b8;font-style:italic}
-/* Profile editor */
-.prof-editor{padding:12px;border-bottom:1px solid #f1f5f9;background:#fafafa}
-.pe-no-sel{padding:16px;text-align:center;color:#94a3b8;font-size:11px;font-style:italic}
-/* Form elements */
-.field-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;flex-wrap:wrap}
-.field-lbl{font-size:11px;font-weight:500;color:#374151;min-width:130px;padding-top:4px;flex-shrink:0}
-input.fi{font-size:11px;padding:4px 8px;border:1px solid #cbd5e1;border-radius:5px;background:#fff;width:100%}
-input.fi:focus{outline:2px solid #3b82f6;border-color:transparent}
-textarea.fi{font-size:11px;padding:4px 8px;border:1px solid #cbd5e1;border-radius:5px;background:#fff;width:100%;resize:vertical;min-height:44px}
-select.fi{font-size:11px;padding:4px 7px;border:1px solid #cbd5e1;border-radius:5px;background:#fff;cursor:pointer}
-.chk{display:flex;align-items:center;gap:4px;cursor:pointer;user-select:none;font-size:11px;color:#374151}
-.chk input{width:13px;height:13px;cursor:pointer;accent-color:#1F4E79}
-.radio-group{display:flex;gap:12px}
-.radio{display:flex;align-items:center;gap:4px;cursor:pointer;font-size:11px;color:#374151}
-.radio input{cursor:pointer;accent-color:#1F4E79}
-/* Sections inside profile editor */
-.pe-section{margin-bottom:10px}
-.pe-sec-title{font-size:11px;font-weight:700;color:#1F4E79;margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;gap:6px}
-.proto-grid{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px}
-.proto-item{background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:6px 10px;min-width:100px}
-.proto-item.on{background:#eff6ff;border-color:#93c5fd}
-.proto-hdr{display:flex;align-items:center;gap:6px;margin-bottom:4px}
-.proto-name{font-size:11px;font-weight:600;color:#374151}
-.proto-name.on{color:#1e40af}
-.proto-action{width:100%}
-.apt-grid{display:flex;flex-direction:column;gap:5px}
+body { font-family: "Inter", sans-serif; }
+.font-headline { font-family: "Manrope", sans-serif; }
+.material-symbols-outlined { font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24; }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #040e1e; }
+::-webkit-scrollbar-thumb { background: #1e2b44; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #3f6091; }
+
+/* Nav items */
+.nav-item { display:flex; align-items:center; gap:12px; padding:12px 16px; color:#93b3e9; font-size:13px; font-weight:500; cursor:pointer; transition:all .2s; }
+.nav-item:hover { background:#1a2b45; }
+.nav-item.active { background:rgba(33,96,160,.3); color:#83b9ff; font-weight:700; border-right:4px solid #83b9ff; }
+.nav-item .material-symbols-outlined { font-size:20px; }
+
+/* Form inputs */
+.fi { background:#14253d; border:2px solid rgba(255,255,255,.05); border-radius:12px; padding:10px 14px; color:#f6f7ff; font-size:12px; width:100%; transition:border-color .15s; outline:none; }
+.fi:focus { border-color:#83b9ff; }
+.fi::placeholder { color:#3f6091; }
+textarea.fi { resize:vertical; min-height:64px; }
+select.fi { cursor:pointer; }
+.fi-lbl { font-size:11px; font-weight:700; color:#93b3e9; display:block; margin-bottom:5px; text-transform:uppercase; letter-spacing:.5px; }
+
+/* Checkboxes */
+.chk { display:flex; align-items:center; gap:6px; cursor:pointer; font-size:12px; color:#93b3e9; user-select:none; }
+.chk input { width:14px; height:14px; cursor:pointer; accent-color:#83b9ff; }
+.radio { display:flex; align-items:center; gap:6px; cursor:pointer; font-size:12px; color:#93b3e9; }
+.radio input { cursor:pointer; accent-color:#83b9ff; }
+.radio-group { display:flex; gap:16px; }
+
+/* Profile chips */
+.chip { display:inline-flex; align-items:center; gap:4px; border:1px solid rgba(255,255,255,.1); border-radius:20px; padding:3px 10px 3px 6px; font-size:11px; cursor:pointer; background:#07162b; transition:all .15s; white-space:nowrap; }
+.chip:hover { border-color:#3f6091; }
+.chip.active { border-color:#83b9ff; background:rgba(33,96,160,.2); }
+.chip-name { font-weight:500; color:#93b3e9; max-width:120px; overflow:hidden; text-overflow:ellipsis; }
+.chip-del { font-size:14px; color:#3f6091; border:none; background:transparent; cursor:pointer; padding:0 2px; line-height:1; }
+.chip-del:hover { color:#f2716d; }
+.pm-bar { display:flex; align-items:center; gap:6px; padding:10px 16px; background:#07162b; border:1px solid rgba(255,255,255,.05); border-radius:12px; flex-wrap:wrap; margin-bottom:20px; }
+
 /* Category table */
-.cat-section{padding:8px 12px}
-.bulk-bar{display:flex;align-items:center;gap:6px;margin-bottom:8px;padding:6px 8px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;flex-wrap:wrap}
-.bulk-lbl{font-size:10px;font-weight:600;color:#475569}
-.bulk-btn{font-size:10px;padding:3px 9px;border-radius:4px;cursor:pointer;border:1px solid;font-weight:500;white-space:nowrap}
-.bb-block{background:#fee2e2;color:#991b1b;border-color:#fca5a5}
-.bb-allow{background:#dcfce7;color:#166534;border-color:#86efac}
-.bb-monitor{background:#fef3c7;color:#92400e;border-color:#fcd34d}
-.bb-disable{background:#f1f5f9;color:#475569;border-color:#cbd5e1}
-.grp{margin-bottom:6px}
-.grp-hdr{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;cursor:pointer;user-select:none}
-.grp-hdr:hover{background:#f1f5f9}
-.grp-title{font-size:11px;font-weight:600;color:#374151}
-.grp-meta{font-size:10px;color:#94a3b8;display:flex;align-items:center;gap:6px}
-.grp-bulk{display:flex;gap:4px}
-.grp-bb{font-size:10px;padding:2px 6px;border-radius:3px;cursor:pointer;border:1px solid;font-weight:500}
-.grp-body{display:none;border:1px solid #e2e8f0;border-top:none;border-radius:0 0 6px 6px}
-.grp-body.open{display:block}
-.cat-tbl{width:100%;border-collapse:collapse;font-size:11px}
-.cat-tbl th{background:#f1f5f9;color:#475569;font-weight:600;padding:5px 7px;text-align:center;border:1px solid #e2e8f0;font-size:10px;position:sticky;top:0;z-index:1}
-.cat-tbl th:first-child{text-align:left;min-width:150px}
-.cat-tbl td{padding:4px 6px;border:1px solid #f1f5f9;vertical-align:middle}
-.cat-tbl tr:hover td{background:#f8fafc}
-.cat-nm{font-size:11px;font-weight:500}
-.cat-ds{font-size:9px;color:#94a3b8;margin-top:1px}
-select.act{font-size:10px;padding:2px 3px;border-radius:4px;border:1px solid;width:82px;cursor:pointer;font-weight:500}
-.a-block{background:#fee2e2;color:#991b1b;border-color:#fca5a5}
-.a-monitor{background:#fef3c7;color:#92400e;border-color:#fcd34d}
-.a-allow{background:#dcfce7;color:#166534;border-color:#86efac}
-.a-disable{background:#f1f5f9;color:#64748b;border-color:#cbd5e1}
-/* Policy tab */
-.pol-form{background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin-bottom:10px}
-.form-title{font-size:12px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px}
-.fg2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
-.fg4{display:grid;grid-template-columns:80px 1fr 1fr 1fr;gap:8px;margin-bottom:8px}
-.fg5{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:8px}
-.fg-item{display:flex;flex-direction:column;gap:3px}
-.fg-lbl{font-size:10px;font-weight:600;color:#475569}
-select.pfi{font-size:11px;padding:4px 6px;border:1px solid #cbd5e1;border-radius:5px;background:#fff;cursor:pointer;width:100%}
-.import-box{display:none;margin-top:10px;padding:10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px}
-.import-box.open{display:block}
-textarea.imp-ta{width:100%;font-size:11px;font-family:'Courier New',monospace;padding:8px;border:1px solid #cbd5e1;border-radius:5px;min-height:90px;resize:vertical}
-.pol-wrap{background:#fff;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden}
-.pol-wrap-hdr{display:flex;align-items:center;justify-content:space-between;padding:9px 13px;background:#f8fafc;border-bottom:1px solid #e2e8f0}
-.pol-scroll{overflow-x:auto;max-height:calc(100vh - 380px);overflow-y:auto}
-table.pol{width:100%;border-collapse:collapse;font-size:11px;min-width:800px}
-table.pol thead th{background:#f1f5f9;color:#475569;font-weight:600;padding:6px 7px;text-align:left;border-bottom:1px solid #e2e8f0;white-space:nowrap;position:sticky;top:0;z-index:1}
-table.pol td{padding:4px 6px;border-bottom:1px solid #f1f5f9;vertical-align:middle}
-table.pol tr.on td{background:#fefce8}
-.pid-c{font-weight:700;color:#1e40af;font-size:11px}
-.pname-c{font-weight:500;font-size:11px}
-.iface-c{font-size:10px;color:#64748b;line-height:1.4}
-select.ps{font-size:11px;padding:2px 4px;border:1px solid #cbd5e1;border-radius:4px;background:#fff;cursor:pointer;width:100%}
-input.pe{font-size:11px;padding:2px 5px;border:1px solid #cbd5e1;border-radius:4px;background:#fff;width:100%;min-width:80px}
-.utm-s{width:52px;font-weight:600}
-.utm-y{color:#16a34a}.utm-n{color:#94a3b8}
-.pol-empty{padding:20px;text-align:center;color:#94a3b8;font-size:11px;font-style:italic}
-/* Optimize tab */
-.opt-card{background:#fff;border:1px solid #e2e8f0;border-radius:8px;margin-bottom:8px;overflow:hidden}
-.opt-hdr{padding:9px 13px;background:#f8fafc;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between}
-.opt-body{padding:10px 12px}
-.noutm-grid{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
-.noutm-item{display:flex;align-items:center;gap:4px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:5px;padding:4px 8px;font-size:11px}
-/* Buttons */
-.btn-p{font-size:11px;padding:5px 14px;background:#1F4E79;color:#fff;border:none;border-radius:5px;cursor:pointer;font-weight:500}
-.btn-p:hover{background:#163d61}
-.btn-s{font-size:11px;padding:5px 12px;background:#fff;color:#374151;border:1px solid #cbd5e1;border-radius:5px;cursor:pointer}
-.btn-s:hover{background:#f1f5f9}
-.btn-d{font-size:11px;padding:3px 8px;background:transparent;color:#ef4444;border:1px solid #fca5a5;border-radius:4px;cursor:pointer}
-.btn-d:hover{background:#fee2e2}
-/* CLI panel */
-.right{background:#0d1117;display:flex;flex-direction:column;overflow:hidden}
-.cli-bar{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;background:#161b22;border-bottom:1px solid #30363d;flex-shrink:0}
-.cli-dots{display:flex;gap:5px}
-.dot{width:11px;height:11px;border-radius:50%}
-.cli-meta{font-size:10px;color:#8b949e;font-family:'Courier New',monospace}
-.btn-ca{font-size:10px;padding:3px 10px;border:1px solid #30363d;border-radius:5px;background:transparent;color:#8b949e;cursor:pointer;transition:all .15s}
-.btn-ca:hover,.btn-ca.ok{background:#21262d;color:#3fb950;border-color:#3fb950}
-.cli-body{flex:1;overflow-y:auto}
-.cli-body::-webkit-scrollbar{width:4px}
-.cli-body::-webkit-scrollbar-thumb{background:#30363d;border-radius:2px}
-.cli-sec{padding:10px 14px;border-bottom:1px solid #21262d}
-.cli-sec:last-child{border-bottom:none}
-.cli-sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
-.cli-sec-name{font-size:10px;font-weight:600;color:#8b949e;font-family:'Courier New',monospace}
-.btn-cp{font-size:10px;padding:2px 9px;border:1px solid #30363d;border-radius:4px;background:transparent;color:#8b949e;cursor:pointer;transition:all .15s}
-.btn-cp:hover,.btn-cp.ok{background:#21262d;color:#3fb950;border-color:#3fb950}
-pre{font-family:'Courier New',monospace;font-size:11px;line-height:1.7;color:#e6edf3;white-space:pre;overflow-x:auto}
-.c-cmt{color:#8b949e}.c-cmd{color:#79c0ff;font-weight:700}
-.c-val{color:#a5d6ff}.c-key{color:#ff7b72}
-.c-str{color:#a8ff3e}.c-end{color:#ffa657;font-weight:600}
-.cli-empty{padding:28px;text-align:center;color:#8b949e;font-family:'Courier New',monospace;font-size:11px}
-@media(max-width:900px){.layout{grid-template-columns:1fr}.right{height:400px}}
+.cat-tbl { width:100%; border-collapse:collapse; font-size:11px; }
+.cat-tbl th { background:#0a1a2f; color:#93b3e9; font-weight:600; padding:7px 8px; text-align:center; border-bottom:1px solid rgba(255,255,255,.05); font-size:10px; position:sticky; top:0; z-index:1; }
+.cat-tbl th:first-child { text-align:left; min-width:160px; }
+.cat-tbl td { padding:5px 7px; border-bottom:1px solid rgba(255,255,255,.04); vertical-align:middle; }
+.cat-tbl tr:hover td { background:#0a1a2f; }
+select.act { font-size:10px; padding:2px 4px; border-radius:4px; border:1px solid; width:82px; cursor:pointer; font-weight:700; background:#07162b; color:#f6f7ff; }
+.a-block { border-color:rgba(242,113,109,.5); color:#f2716d; background:rgba(242,113,109,.12); }
+.a-monitor { border-color:rgba(251,191,36,.4); color:#fbbf24; background:rgba(251,191,36,.1); }
+.a-allow { border-color:rgba(52,211,153,.4); color:#34d399; background:rgba(52,211,153,.1); }
+.a-disable { border-color:rgba(255,255,255,.1); color:#3f6091; background:rgba(255,255,255,.03); }
+
+/* Group accordion */
+.grp-hdr { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:#07162b; border:1px solid rgba(255,255,255,.06); border-radius:8px; cursor:pointer; user-select:none; margin-bottom:4px; transition:all .15s; }
+.grp-hdr:hover { background:#0a1a2f; border-color:rgba(255,255,255,.1); }
+.grp-body { display:none; border:1px solid rgba(255,255,255,.06); border-radius:0 0 8px 8px; overflow-x:auto; margin-bottom:8px; border-top:none; }
+.grp-body.open { display:block; }
+
+/* Bulk bar */
+.bulk-bar { display:flex; align-items:center; gap:6px; padding:8px 12px; background:#07162b; border-bottom:1px solid rgba(255,255,255,.05); flex-wrap:wrap; }
+.bb { font-size:10px; padding:3px 9px; border-radius:4px; cursor:pointer; border:1px solid; font-weight:700; white-space:nowrap; background:transparent; }
+.bb-block { border-color:rgba(242,113,109,.4); color:#f2716d; }
+.bb-allow { border-color:rgba(52,211,153,.4); color:#34d399; }
+.bb-monitor { border-color:rgba(251,191,36,.4); color:#fbbf24; }
+.bb-disable { border-color:rgba(255,255,255,.1); color:#3f6091; }
+
+/* Policy table */
+table.pol { width:100%; border-collapse:collapse; font-size:11px; min-width:800px; }
+table.pol thead th { background:#0a1a2f; color:#93b3e9; font-weight:600; padding:7px 8px; text-align:left; border-bottom:1px solid rgba(255,255,255,.05); white-space:nowrap; position:sticky; top:0; z-index:1; }
+table.pol td { padding:6px 8px; border-bottom:1px solid rgba(255,255,255,.04); vertical-align:middle; }
+table.pol tr.on td { background:rgba(33,96,160,.08); }
+.utm-y { color:#34d399; font-weight:700; }
+.utm-n { color:#3f6091; font-weight:600; }
+select.ps { font-size:11px; padding:3px 6px; border:1px solid rgba(255,255,255,.08); border-radius:6px; background:#07162b; color:#f6f7ff; cursor:pointer; width:100%; }
+input.pe { font-size:11px; padding:3px 7px; border:1px solid rgba(255,255,255,.08); border-radius:6px; background:#07162b; color:#f6f7ff; width:100%; outline:none; }
+input.pe:focus { border-color:#83b9ff; }
+
+/* Proto */
+.proto-item { background:#07162b; border:1px solid rgba(255,255,255,.07); border-radius:10px; padding:10px 14px; min-width:115px; }
+.proto-item.on { background:rgba(33,96,160,.15); border-color:rgba(131,185,255,.3); }
+.proto-hdr { display:flex; align-items:center; gap:6px; margin-bottom:6px; }
+.proto-name { font-size:11px; font-weight:600; color:#93b3e9; }
+.proto-name.on { color:#83b9ff; }
+.proto-grid { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px; }
+
+/* Editor */
+.pe-no-sel, .empty-state, .no-profiles-msg { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:48px 24px; text-align:center; color:#3f6091; }
+.pe-section { margin-bottom:16px; }
+.pe-sec-title { font-size:12px; font-weight:700; color:#83b9ff; margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid rgba(255,255,255,.06); display:flex; align-items:center; gap:8px; }
+.pe-sec-title::before { content:""; width:3px; height:14px; background:#83b9ff; border-radius:2px; display:inline-block; box-shadow:0 0 8px rgba(131,185,255,.6); }
+.field-row { display:flex; align-items:flex-start; gap:8px; margin-bottom:10px; flex-wrap:wrap; }
+.field-lbl { font-size:11px; font-weight:600; color:#93b3e9; min-width:130px; padding-top:8px; flex-shrink:0; }
+.apt-grid { display:flex; flex-direction:column; gap:8px; }
+.prof-editor { padding:20px; background:#07162b; border-radius:16px; border:1px solid rgba(255,255,255,.06); margin-bottom:14px; }
+
+/* Misc */
+.import-box { display:none; padding:14px; background:#07162b; border:1px solid rgba(255,255,255,.07); border-radius:12px; margin-top:10px; }
+.import-box.open { display:block; }
+.noutm-item { display:flex; align-items:center; gap:6px; background:#07162b; border:1px solid rgba(255,255,255,.07); border-radius:8px; padding:6px 10px; font-size:12px; color:#93b3e9; }
+.pol-empty { text-align:center; padding:32px; color:#3f6091; font-size:12px; font-style:italic; }
+.dashed-card { border:2px dashed rgba(255,255,255,.08); border-radius:16px; padding:32px; display:flex; flex-direction:column; align-items:center; text-align:center; margin-bottom:20px; background:#07162b; }
+.card { background:#07162b; border:1px solid rgba(255,255,255,.06); border-radius:16px; padding:20px; margin-bottom:16px; }
 </style>
 </head>
-<body>
-<header>
-  <h1>FortiGate Security Config Tool</h1>
-  <span class="ver">v5.0</span>
+<body class="bg-background text-on-surface overflow-hidden">
+
+<!-- HEADER -->
+<header class="flex justify-between items-center px-8 h-16 w-full fixed top-0 z-50 bg-[#040e1e] border-b border-white/5">
+  <div class="flex items-center gap-8">
+    <span class="flex items-center gap-2">
+      <span class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL' 1,'wght' 700">shield</span>
+      <span class="text-[#83b9ff] font-headline font-extrabold tracking-tight text-lg">FortiGate Config Tool</span>
+      <span class="text-[10px] font-bold px-2 py-0.5 bg-[#2160a0]/40 text-[#83b9ff] rounded-full border border-[#83b9ff]/20 ml-1">v7.0</span>
+    </span>
+    <nav class="hidden md:flex gap-6">
+      <a class="font-headline font-bold text-base text-[#93b3e9] hover:text-[#83b9ff] transition-colors cursor-pointer">Documentation</a>
+      <a class="font-headline font-bold text-base text-[#93b3e9] hover:text-[#83b9ff] transition-colors cursor-pointer">Templates</a>
+      <a class="font-headline font-bold text-base text-[#93b3e9] hover:text-[#83b9ff] transition-colors cursor-pointer">Support</a>
+    </nav>
+  </div>
+  <div class="flex items-center gap-4">
+    <div class="relative">
+      <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" style="font-size:18px">search</span>
+      <input class="bg-[#14253d] border border-white/5 rounded-full pl-10 pr-4 py-2 text-sm text-white placeholder-[#3f6091] focus:outline-none focus:border-[#83b9ff] w-56 transition-all" placeholder="Tim kiem lenh...">
+    </div>
+    <button class="material-symbols-outlined text-[#83b9ff] p-2 hover:bg-[#14253d] rounded-full transition-colors cursor-pointer">settings</button>
+    <button class="material-symbols-outlined text-[#83b9ff] p-2 hover:bg-[#14253d] rounded-full transition-colors cursor-pointer">help</button>
+    <div class="flex items-center gap-2 px-3 py-1.5 bg-[#07162b] border border-white/5 rounded-full">
+      <span class="w-2 h-2 rounded-full bg-green-400" style="box-shadow:0 0 6px #4ade80"></span>
+      <span class="text-xs text-[#3f6091]" id="cli-line-count">0 phan</span>
+    </div>
+    <button onclick="copyAll()" class="bg-gradient-to-r from-[#2160a0] to-[#0a5493] text-white px-5 py-2 rounded-full font-bold text-sm flex items-center gap-2 hover:shadow-[0_0_20px_rgba(33,96,160,.4)] transition-all">
+      <span class="material-symbols-outlined" style="font-size:16px">bolt</span> Deploy Config
+    </button>
+  </div>
 </header>
-<div class="tabbar">
-  <div class="tb active" onclick="showTab('profiles')">Security Profiles (1–5)</div>
-  <div class="tb" onclick="showTab('policy')">Policy UTM (6)</div>
-  <div class="tb" onclick="showTab('optimize')">Toi uu (7+)</div>
+
+<div class="flex pt-16 h-screen overflow-hidden">
+
+  <!-- SIDEBAR -->
+  <aside class="fixed left-0 top-16 h-[calc(100vh-64px)] w-64 flex flex-col py-6 bg-[#0a1a2f] border-r border-white/5 z-40">
+    <div class="px-6 mb-8">
+      <div class="flex items-center gap-3 mb-1">
+        <span class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL' 1">security</span>
+        <h3 class="font-headline font-bold text-on-surface">Security Architect</h3>
+      </div>
+      <p class="text-xs text-outline font-medium uppercase tracking-wider">Configurator Mode</p>
+    </div>
+    <nav class="flex-1 space-y-0.5 overflow-y-auto">
+      <a class="nav-item" id="nav-av" onclick="navTo('av')">
+        <span class="material-symbols-outlined">security</span>
+        <span class="font-medium text-sm">Antivirus</span>
+      </a>
+      <a class="nav-item" id="nav-app" onclick="navTo('app')">
+        <span class="material-symbols-outlined">apps</span>
+        <span class="font-medium text-sm">App Control</span>
+      </a>
+      <a class="nav-item" id="nav-wf" onclick="navTo('wf')">
+        <span class="material-symbols-outlined">language</span>
+        <span class="font-medium text-sm">Web Filter</span>
+      </a>
+      <a class="nav-item" id="nav-dns" onclick="navTo('dns')">
+        <span class="material-symbols-outlined">dns</span>
+        <span class="font-medium text-sm">DNS Filter</span>
+      </a>
+      <a class="nav-item" id="nav-policy" onclick="navTo('policy')">
+        <span class="material-symbols-outlined">security_update_good</span>
+        <span class="font-medium text-sm">Firewall Policy</span>
+      </a>
+      <a class="nav-item" id="nav-optimize" onclick="navTo('optimize')">
+        <span class="material-symbols-outlined">settings</span>
+        <span class="font-medium text-sm">System Settings</span>
+      </a>
+    </nav>
+    <div class="px-4 mt-auto">
+      <button onclick="copyAll()" class="w-full bg-gradient-to-r from-[#2160a0] to-[#0a5493] text-white py-3 rounded-xl font-bold text-sm shadow-lg shadow-black/50 hover:scale-[0.98] transition-transform duration-150 mb-4">
+        Deploy Config
+      </button>
+      <a class="nav-item rounded-lg">
+        <span class="material-symbols-outlined">logout</span>
+        <span class="font-medium text-sm">Logout</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="ml-64 flex-1 flex flex-row bg-background overflow-hidden">
+
+    <!-- CENTER PANEL -->
+    <section class="flex-1 overflow-y-auto border-r border-white/5" id="main-panel">
+      <div class="p-8 max-w-3xl">
+
+        <!-- AV PANEL -->
+        <div id="panel-av">
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <h2 class="font-headline font-bold text-2xl text-on-surface">Antivirus Profiles</h2>
+              <p class="text-sm text-outline mt-1" id="av-sub">Chua co profile</p>
+            </div>
+            <div class="flex items-center gap-3">
+              <label class="chk"><input type="checkbox" id="tog-av" checked onchange="render()"> Xuat CLI</label>
+              <button onclick="addAvProfile()" class="flex items-center gap-2 bg-[#2160a0] text-white px-5 py-2 rounded-xl font-bold text-sm hover:bg-[#2c77c5] hover:shadow-[0_0_20px_rgba(33,96,160,.4)] transition-all">
+                <span class="material-symbols-outlined" style="font-size:16px">add</span> Them Profile
+              </button>
+            </div>
+          </div>
+          <div class="pm-bar" id="pm-av">
+            <span style="font-size:10px;font-weight:700;color:#3f6091;text-transform:uppercase;letter-spacing:.5px">Profiles:</span>
+            <span style="font-size:11px;color:#3f6091;font-style:italic">Chua co profile</span>
+          </div>
+          <div id="av-editor">
+            <div class="mb-10 p-8 rounded-2xl bg-[#07162b] border-2 border-dashed border-[#3f6091]/30 flex flex-col items-center text-center">
+              <div class="w-16 h-16 bg-[#1a2b45] rounded-full flex items-center justify-center mb-4">
+                <span class="material-symbols-outlined text-primary text-3xl">add_circle</span>
+              </div>
+              <h2 class="text-xl font-headline font-bold mb-2 text-on-surface">San sang de cau hinh?</h2>
+              <p class="text-on-surface-variant max-w-sm text-sm">Chon profile hien co hoac nhan nut de tao cau hinh CLI moi cho thiet bi cua ban.</p>
+              <button onclick="addAvProfile()" class="mt-6 flex items-center gap-2 text-white font-bold px-6 py-2 bg-[#2160a0] rounded-lg hover:bg-[#2c77c5] transition-all">
+                <span class="material-symbols-outlined">add</span> Them Profile Moi
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- APP PANEL -->
+        <div id="panel-app" style="display:none">
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <h2 class="font-headline font-bold text-2xl text-on-surface">Application Control</h2>
+              <p class="text-sm text-outline mt-1" id="app-sub">Chua co profile</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <label class="chk"><input type="checkbox" id="tog-app" checked onchange="render()"> Xuat CLI</label>
+              <button onclick="bulkExport('app',true)" class="text-xs px-3 py-1.5 border border-white/10 rounded-lg text-[#93b3e9] hover:bg-[#1a2b45] transition-colors">Xuat tat ca</button>
+              <button onclick="bulkExport('app',false)" class="text-xs px-3 py-1.5 border border-white/10 rounded-lg text-[#93b3e9] hover:bg-[#1a2b45] transition-colors">Bo xuat</button>
+              <button onclick="addGenProfile('app')" class="flex items-center gap-2 bg-[#2160a0] text-white px-5 py-2 rounded-xl font-bold text-sm hover:bg-[#2c77c5] transition-all">
+                <span class="material-symbols-outlined" style="font-size:16px">add</span> Them
+              </button>
+            </div>
+          </div>
+          <div class="pm-bar" id="pm-app"><span style="font-size:10px;font-weight:700;color:#3f6091;text-transform:uppercase;letter-spacing:.5px">Profiles:</span><span style="font-size:11px;color:#3f6091;font-style:italic">Chua co profile</span></div>
+          <div id="app-editor"><div style="display:flex;flex-direction:column;align-items:center;padding:40px;text-align:center;color:#3f6091"><span class="material-symbols-outlined" style="font-size:40px;margin-bottom:8px">add_circle</span><p style="font-size:13px">Them profile de bat dau</p></div></div>
+        </div>
+
+        <!-- WF PANEL -->
+        <div id="panel-wf" style="display:none">
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <h2 class="font-headline font-bold text-2xl text-on-surface">Web Filter Profiles</h2>
+              <p class="text-sm text-outline mt-1" id="wf-sub">Chua co profile</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <label class="chk"><input type="checkbox" id="tog-wf" checked onchange="render()"> Xuat CLI</label>
+              <button onclick="bulkExport('wf',true)" class="text-xs px-3 py-1.5 border border-white/10 rounded-lg text-[#93b3e9] hover:bg-[#1a2b45] transition-colors">Xuat tat ca</button>
+              <button onclick="bulkExport('wf',false)" class="text-xs px-3 py-1.5 border border-white/10 rounded-lg text-[#93b3e9] hover:bg-[#1a2b45] transition-colors">Bo xuat</button>
+              <button onclick="addGenProfile('wf')" class="flex items-center gap-2 bg-[#2160a0] text-white px-5 py-2 rounded-xl font-bold text-sm hover:bg-[#2c77c5] transition-all">
+                <span class="material-symbols-outlined" style="font-size:16px">add</span> Them
+              </button>
+            </div>
+          </div>
+          <div class="pm-bar" id="pm-wf"><span style="font-size:10px;font-weight:700;color:#3f6091;text-transform:uppercase;letter-spacing:.5px">Profiles:</span><span style="font-size:11px;color:#3f6091;font-style:italic">Chua co profile</span></div>
+          <div id="wf-editor"><div style="display:flex;flex-direction:column;align-items:center;padding:40px;text-align:center;color:#3f6091"><span class="material-symbols-outlined" style="font-size:40px;margin-bottom:8px">add_circle</span><p style="font-size:13px">Them profile de bat dau</p></div></div>
+        </div>
+
+        <!-- DNS PANEL -->
+        <div id="panel-dns" style="display:none">
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <h2 class="font-headline font-bold text-2xl text-on-surface">DNS Filter Profiles</h2>
+              <p class="text-sm text-outline mt-1" id="dns-sub">Chua co profile</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <label class="chk"><input type="checkbox" id="tog-dns" checked onchange="render()"> Xuat CLI</label>
+              <button onclick="bulkExport('dns',true)" class="text-xs px-3 py-1.5 border border-white/10 rounded-lg text-[#93b3e9] hover:bg-[#1a2b45] transition-colors">Xuat tat ca</button>
+              <button onclick="bulkExport('dns',false)" class="text-xs px-3 py-1.5 border border-white/10 rounded-lg text-[#93b3e9] hover:bg-[#1a2b45] transition-colors">Bo xuat</button>
+              <button onclick="addGenProfile('dns')" class="flex items-center gap-2 bg-[#2160a0] text-white px-5 py-2 rounded-xl font-bold text-sm hover:bg-[#2c77c5] transition-all">
+                <span class="material-symbols-outlined" style="font-size:16px">add</span> Them
+              </button>
+            </div>
+          </div>
+          <div class="pm-bar" id="pm-dns"><span style="font-size:10px;font-weight:700;color:#3f6091;text-transform:uppercase;letter-spacing:.5px">Profiles:</span><span style="font-size:11px;color:#3f6091;font-style:italic">Chua co profile</span></div>
+          <div id="dns-editor"><div style="display:flex;flex-direction:column;align-items:center;padding:40px;text-align:center;color:#3f6091"><span class="material-symbols-outlined" style="font-size:40px;margin-bottom:8px">add_circle</span><p style="font-size:13px">Them profile de bat dau</p></div></div>
+        </div>
+
+        <!-- POLICY PANEL -->
+        <div id="panel-policy" style="display:none">
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <h2 class="font-headline font-bold text-2xl text-on-surface">Firewall Policy UTM</h2>
+              <p class="text-sm text-outline mt-1" id="pol-count">Chua co policy</p>
+            </div>
+            <div class="flex items-center gap-3">
+              <label class="chk"><input type="checkbox" id="tog-pol" checked onchange="render()"> Xuat CLI</label>
+              <button onclick="toggleImport()" class="text-sm px-4 py-2 border border-white/10 rounded-xl text-[#93b3e9] hover:bg-[#1a2b45] transition-colors">Import</button>
+            </div>
+          </div>
+
+          <div class="bg-[#07162b] border border-white/5 rounded-2xl p-6 mb-5">
+            <p class="text-[10px] font-bold text-outline uppercase tracking-widest mb-4">Them Policy Moi</p>
+            <div class="grid grid-cols-4 gap-3 mb-3">
+              <div><label class="fi-lbl">ID *</label><input class="fi" id="np-id" type="number" placeholder="30"></div>
+              <div class="col-span-2"><label class="fi-lbl">Ten Policy *</label><input class="fi" id="np-name" placeholder="VLAN-XXX-TO-INTERNET"></div>
+              <div><label class="fi-lbl">UTM</label><select class="fi" id="np-utm" onchange="syncNewPolUtm()"><option>YES</option><option>NO</option></select></div>
+            </div>
+            <div class="grid grid-cols-3 gap-3 mb-3">
+              <div><label class="fi-lbl">Src Interface</label><input class="fi" id="np-src" placeholder="VLAN-XXX"></div>
+              <div><label class="fi-lbl">Dst Interface</label><input class="fi" id="np-dst" value="virtual-wan-link"></div>
+              <div><label class="fi-lbl">SSL Profile</label><select class="fi" id="np-ssl"><option>certificate-inspection</option><option>no-inspection</option></select></div>
+            </div>
+            <div class="grid grid-cols-4 gap-3 mb-5" id="np-utm-fields">
+              <div><label class="fi-lbl">AV</label><select class="fi" id="np-av"><option value="">--</option></select></div>
+              <div><label class="fi-lbl">WebFilter</label><select class="fi" id="np-wf"><option value="">--</option></select></div>
+              <div><label class="fi-lbl">DNS</label><select class="fi" id="np-dns"><option value="">--</option></select></div>
+              <div><label class="fi-lbl">App Control</label><select class="fi" id="np-app"><option value="">--</option></select></div>
+            </div>
+            <div class="flex gap-3">
+              <button onclick="addPolicy()" class="bg-[#2160a0] text-white px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-[#2c77c5] transition-all">+ Them Policy</button>
+              <button onclick="toggleImport()" class="text-[#83b9ff] px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-[#1a2b45] transition-all">Import nhieu</button>
+            </div>
+          </div>
+
+          <div class="import-box" id="import-box">
+            <p class="text-xs text-outline mb-2">Format: <code class="bg-[#0a1a2f] px-2 py-0.5 rounded text-[#83b9ff] font-mono">ID|TenPolicy|SrcIntf|DstIntf</code></p>
+            <textarea class="fi" id="import-ta" style="font-family:monospace;min-height:90px" placeholder="30|VLAN-107-TO-INTERNET|VLAN-107|virtual-wan-link"></textarea>
+            <div class="flex gap-2 mt-3">
+              <button onclick="importPolicies()" class="bg-[#2160a0] text-white px-5 py-2 rounded-xl font-bold text-sm hover:bg-[#2c77c5] transition-all">Import</button>
+              <button onclick="toggleImport()" class="text-[#83b9ff] px-5 py-2 rounded-xl font-bold text-sm hover:bg-[#1a2b45] transition-all">Huy</button>
+            </div>
+          </div>
+
+          <div class="bg-[#07162b] border border-white/5 rounded-2xl overflow-hidden">
+            <div class="overflow-x-auto" style="max-height:calc(100vh - 440px);overflow-y:auto">
+              <table class="pol"><thead><tr>
+                <th>ID</th><th>Ten Policy</th><th>Src/Dst</th><th>UTM</th><th>SSL</th><th>AV</th><th>WebFilter</th><th>DNS</th><th>AppCtrl</th><th></th>
+              </tr></thead>
+              <tbody id="pol-body"><tr><td colspan="10" class="pol-empty">Chua co policy</td></tr></tbody></table>
+            </div>
+          </div>
+        </div>
+
+        <!-- OPTIMIZE PANEL -->
+        <div id="panel-optimize" style="display:none;max-width:540px">
+          <h2 class="font-headline font-bold text-2xl text-on-surface mb-6">System Settings</h2>
+
+          <div class="bg-[#07162b] border border-white/5 rounded-2xl p-5 mb-4">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-[#2160a0]/20 rounded-xl flex items-center justify-center border border-[#83b9ff]/20">
+                  <span class="material-symbols-outlined text-[#83b9ff]" style="font-size:18px">cached</span>
+                </div>
+                <div><p class="font-bold text-sm text-on-surface">WebFilter Cache</p><p class="text-xs text-outline">FortiGuard cache optimization</p></div>
+              </div>
+              <label class="chk"><input type="checkbox" id="tog-wfc" checked onchange="render()"> Xuat CLI</label>
+            </div>
+            <div class="flex items-center gap-4 flex-wrap">
+              <div class="flex items-center gap-2"><span class="text-sm text-on-surface-variant">cache-mode</span><select class="fi" id="wfc-mode" style="width:auto" onchange="render()"><option value="ttl">ttl</option><option value="db">db</option></select></div>
+              <label class="chk"><input type="checkbox" id="wfc-prefix" checked onchange="render()"><span>cache-prefix-match</span></label>
+            </div>
+          </div>
+
+          <div class="bg-[#07162b] border border-white/5 rounded-2xl p-5 mb-4">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-[#2160a0]/20 rounded-xl flex items-center justify-center border border-[#83b9ff]/20">
+                  <span class="material-symbols-outlined text-[#83b9ff]" style="font-size:18px">dns</span>
+                </div>
+                <div><p class="font-bold text-sm text-on-surface">DNS Log Disable</p><p class="text-xs text-outline">Tat log-all-domain</p></div>
+              </div>
+              <label class="chk"><input type="checkbox" id="tog-dns7" checked onchange="render()"> Xuat CLI</label>
+            </div>
+            <div id="dns7-linked" class="mb-3"></div>
+            <p class="text-xs text-outline mb-2">Profile ngoai danh sach:</p>
+            <div id="dns7-custom" class="flex flex-wrap gap-2 mb-3"></div>
+            <div class="flex gap-2">
+              <input class="fi" id="dns7-new" placeholder="Ten profile" style="max-width:200px" onkeydown="if(event.key==='Enter')addDns7()">
+              <button onclick="addDns7()" class="text-[#83b9ff] px-4 py-2 border border-white/10 rounded-xl text-sm font-semibold hover:bg-[#1a2b45] transition-all">+ Them</button>
+            </div>
+          </div>
+
+          <div class="bg-[#07162b] border border-white/5 rounded-2xl p-5 mb-4">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-[#2160a0]/20 rounded-xl flex items-center justify-center border border-[#83b9ff]/20">
+                  <span class="material-symbols-outlined text-[#83b9ff]" style="font-size:18px">timer</span>
+                </div>
+                <div><p class="font-bold text-sm text-on-surface">Admin Timeout</p><p class="text-xs text-outline">admintimeout</p></div>
+              </div>
+              <label class="chk"><input type="checkbox" id="tog-adm" checked onchange="render()"> Xuat CLI</label>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-sm text-on-surface-variant">admintimeout</span>
+              <input type="number" id="adm-timeout" value="10" min="1" max="480" class="fi" style="width:80px" onchange="render()">
+              <span class="text-xs text-outline">phut</span>
+            </div>
+          </div>
+
+          <div class="bg-[#07162b] border border-white/5 rounded-2xl p-5">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-error/10 rounded-xl flex items-center justify-center border border-error/20">
+                  <span class="material-symbols-outlined text-error" style="font-size:18px">block</span>
+                </div>
+                <div><p class="font-bold text-sm text-on-surface">Xoa UTM Policy low-risk</p><p class="text-xs text-outline">unset toan bo UTM profiles</p></div>
+              </div>
+              <label class="chk"><input type="checkbox" id="tog-noutm" checked onchange="render()"> Xuat CLI</label>
+            </div>
+            <div class="flex flex-wrap gap-2 mb-3" id="noutm-list"></div>
+            <div class="flex gap-2 flex-wrap">
+              <input class="fi" id="noutm-id" type="number" placeholder="Policy ID" style="width:80px">
+              <input class="fi" id="noutm-name" placeholder="Mo ta" style="max-width:180px">
+              <button onclick="addNoUtm()" class="text-[#83b9ff] px-4 py-2 border border-white/10 rounded-xl text-sm font-semibold hover:bg-[#1a2b45] transition-all">+ Them</button>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /max-w-3xl -->
+    </section>
+
+    <!-- CLI PANEL -->
+    <section class="w-full md:w-[450px] lg:w-[500px] bg-[#040e1e] flex flex-col relative flex-shrink-0 border-l border-white/5">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-[#07162b]/50">
+        <div class="flex items-center gap-3">
+          <div class="flex gap-1.5">
+            <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+            <div class="w-3 h-3 rounded-full bg-amber-500/80"></div>
+            <div class="w-3 h-3 rounded-full bg-green-500/80"></div>
+          </div>
+          <span class="text-white/40 text-xs font-mono ml-4">config_output.conf</span>
+        </div>
+        <button onclick="copyAll()" class="flex items-center gap-2 text-[#83b9ff] hover:text-white transition-colors text-sm font-bold bg-white/5 px-3 py-1.5 rounded-lg border border-white/10 hover:bg-white/10">
+          <span class="material-symbols-outlined" style="font-size:16px">content_copy</span> Copy All
+        </button>
+      </div>
+      <div class="flex-1 overflow-auto font-mono text-sm leading-relaxed bg-[#040e1e]" id="cli-body">
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:40px;text-align:center">
+          <p style="color:rgba(255,255,255,.12);font-family:'Roboto Mono',monospace;font-size:12px;line-height:2.4">Them profiles va policies<br>de bat dau sinh CLI</p>
+        </div>
+      </div>
+      <div class="p-4 bg-[#07162b] border-t border-white/5 text-[10px] text-white/40 flex justify-between font-mono">
+        <span>Syntax: FortiOS 7.6.0</span>
+        <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-green-500" style="box-shadow:0 0 5px #22c55e"></span><span id="cli-meta">Live Preview Sync On</span></span>
+      </div>
+    </section>
+
+  </main>
 </div>
-<div class="layout">
-<div class="left">
 
-<!-- ═══ PROFILES TAB ═══ -->
-<div id="tab-profiles">
-
-<!-- 01 AV -->
-<div class="ac">
-  <div class="ac-hdr" onclick="tac('av')">
-    <div class="ac-left">
-      <span class="ac-num">01</span>
-      <div><div class="ac-title">AV Profiles</div><div class="ac-sub" id="av-sub">Chua co profile</div></div>
-    </div>
-    <div class="ac-right" onclick="e=>e.stopPropagation()">
-      <label class="tog" onclick="event.stopPropagation()"><input type="checkbox" id="tog-av" checked onchange="render()"><span>Xuat CLI</span></label>
-      <span class="ac-arr" id="arr-av">▼</span>
-    </div>
-  </div>
-  <div class="ac-body" id="body-av">
-    <div class="pm" id="pm-av">
-      <span class="pm-lbl">Profiles:</span>
-      <span class="pm-hint">Chua co profile</span>
-      <button class="btn-add" onclick="addAvProfile()">+ Them profile</button>
-    </div>
-    <div id="av-editor">
-      <div class="pe-no-sel">Chon hoac them profile de chinh sua</div>
-    </div>
-  </div>
-</div>
-
-<!-- 02 AppControl -->
-<div class="ac">
-  <div class="ac-hdr" onclick="tac('app')">
-    <div class="ac-left">
-      <span class="ac-num">02</span>
-      <div><div class="ac-title">Application Control</div><div class="ac-sub" id="app-sub">Chua co profile</div></div>
-    </div>
-    <div class="ac-right" onclick="e=>e.stopPropagation()">
-      <label class="tog" onclick="event.stopPropagation()"><input type="checkbox" id="tog-app" checked onchange="render()"><span>Xuat CLI</span></label>
-      <span class="ac-arr" id="arr-app">▼</span>
-    </div>
-  </div>
-  <div class="ac-body" id="body-app">
-    <div class="pm" id="pm-app">
-      <span class="pm-lbl">Profiles:</span>
-      <span class="pm-hint">Chua co profile</span>
-      <button class="btn-add" onclick="addGenProfile('app')">+ Them profile</button>
-    </div>
-    <div id="app-editor">
-      <div class="pe-no-sel">Chon hoac them profile de chinh sua</div>
-    </div>
-  </div>
-</div>
-
-<!-- 03 WebFilter -->
-<div class="ac">
-  <div class="ac-hdr" onclick="tac('wf')">
-    <div class="ac-left">
-      <span class="ac-num">03</span>
-      <div><div class="ac-title">WebFilter Profiles</div><div class="ac-sub" id="wf-sub">Chua co profile</div></div>
-    </div>
-    <div class="ac-right" onclick="e=>e.stopPropagation()">
-      <label class="tog" onclick="event.stopPropagation()"><input type="checkbox" id="tog-wf" checked onchange="render()"><span>Xuat CLI</span></label>
-      <span class="ac-arr" id="arr-wf">▼</span>
-    </div>
-  </div>
-  <div class="ac-body" id="body-wf">
-    <div class="pm" id="pm-wf">
-      <span class="pm-lbl">Profiles:</span>
-      <span class="pm-hint">Chua co profile</span>
-      <button class="btn-add" onclick="addGenProfile('wf')">+ Them profile</button>
-    </div>
-    <div id="wf-editor">
-      <div class="pe-no-sel">Chon hoac them profile de chinh sua</div>
-    </div>
-  </div>
-</div>
-
-<!-- 04 DNS Filter -->
-<div class="ac">
-  <div class="ac-hdr" onclick="tac('dns')">
-    <div class="ac-left">
-      <span class="ac-num">04</span>
-      <div><div class="ac-title">DNS Filter Profiles</div><div class="ac-sub" id="dns-sub">Chua co profile</div></div>
-    </div>
-    <div class="ac-right" onclick="e=>e.stopPropagation()">
-      <label class="tog" onclick="event.stopPropagation()"><input type="checkbox" id="tog-dns" checked onchange="render()"><span>Xuat CLI</span></label>
-      <span class="ac-arr" id="arr-dns">▼</span>
-    </div>
-  </div>
-  <div class="ac-body" id="body-dns">
-    <div class="pm" id="pm-dns">
-      <span class="pm-lbl">Profiles:</span>
-      <span class="pm-hint">Chua co profile</span>
-      <button class="btn-add" onclick="addGenProfile('dns')">+ Them profile</button>
-    </div>
-    <div id="dns-editor">
-      <div class="pe-no-sel">Chon hoac them profile de chinh sua</div>
-    </div>
-  </div>
-</div>
-
-</div><!-- /tab-profiles -->
-
-<!-- ═══ POLICY TAB ═══ -->
-<div id="tab-policy" style="display:none">
-  <div class="pol-form">
-    <div class="form-title">
-      Them Policy moi
-      <button class="btn-s" style="margin-left:auto" onclick="toggleImport()">Import nhieu policy</button>
-    </div>
-    <div class="fg4">
-      <div class="fg-item"><span class="fg-lbl">ID *</span><input class="fi" id="np-id" type="number" placeholder="30" min="1"></div>
-      <div class="fg-item"><span class="fg-lbl">Ten Policy *</span><input class="fi" id="np-name" placeholder="VLAN-XXX-TO-INTERNET"></div>
-      <div class="fg-item"><span class="fg-lbl">Src Interface</span><input class="fi" id="np-src" placeholder="VLAN-XXX"></div>
-      <div class="fg-item"><span class="fg-lbl">Dst Interface</span><input class="fi" id="np-dst" value="virtual-wan-link"></div>
-    </div>
-    <div class="fg5" id="np-utm-fields">
-      <div class="fg-item"><span class="fg-lbl">UTM</span>
-        <select class="pfi" id="np-utm" onchange="syncNewPolUtm()"><option>YES</option><option>NO</option></select>
-      </div>
-      <div class="fg-item"><span class="fg-lbl">SSL Profile</span>
-        <select class="pfi" id="np-ssl"><option>certificate-inspection</option><option>no-inspection</option></select>
-      </div>
-      <div class="fg-item"><span class="fg-lbl">AV Profile</span>
-        <select class="pfi" id="np-av"><option value="">-- chon --</option></select>
-      </div>
-      <div class="fg-item"><span class="fg-lbl">WebFilter</span>
-        <select class="pfi" id="np-wf"><option value="">-- chon --</option></select>
-      </div>
-      <div class="fg-item"><span class="fg-lbl">DNS Filter</span>
-        <select class="pfi" id="np-dns"><option value="">-- chon --</option></select>
-      </div>
-    </div>
-    <div class="fg-item" style="margin-bottom:10px" id="np-app-field">
-      <span class="fg-lbl">App Control</span>
-      <select class="pfi" id="np-app" style="max-width:220px"><option value="">-- chon --</option></select>
-    </div>
-    <div style="display:flex;gap:8px;align-items:center">
-      <button class="btn-p" onclick="addPolicy()">+ Them Policy</button>
-      <span style="font-size:10px;color:#94a3b8">* bat buoc</span>
-    </div>
-    <div class="import-box" id="import-box">
-      <div style="font-size:10px;color:#64748b;margin-bottom:6px">Format: <code style="background:#e2e8f0;padding:1px 5px;border-radius:3px">ID|TenPolicy|SrcIntf|DstIntf</code></div>
-      <textarea class="imp-ta" id="import-ta" placeholder="30|VLAN-107-TO-INTERNET|VLAN-107|virtual-wan-link&#10;31|VLAN-108-TO-INTERNET|VLAN-108|virtual-wan-link"></textarea>
-      <div style="display:flex;gap:8px;margin-top:8px">
-        <button class="btn-p" onclick="importPolicies()">Import</button>
-        <button class="btn-s" onclick="toggleImport()">Huy</button>
-      </div>
-    </div>
-  </div>
-  <div class="pol-wrap">
-    <div class="pol-wrap-hdr">
-      <div style="font-size:12px;font-weight:600">Danh sach Policy <span id="pol-count" style="font-size:10px;color:#64748b;font-weight:400"></span></div>
-      <label class="tog"><input type="checkbox" id="tog-pol" checked onchange="render()"><span>Xuat CLI</span></label>
-    </div>
-    <div class="pol-scroll">
-      <table class="pol">
-        <thead><tr>
-          <th>ID</th><th>Ten Policy</th><th>Src/Dst</th>
-          <th>UTM</th><th>SSL</th><th>AV</th><th>WebFilter</th><th>DNS</th><th>AppCtrl</th><th></th>
-        </tr></thead>
-        <tbody id="pol-body"><tr><td colspan="10" class="pol-empty">Chua co policy</td></tr></tbody>
-      </table>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ OPTIMIZE TAB ═══ -->
-<div id="tab-optimize" style="display:none">
-
-  <div class="opt-card">
-    <div class="opt-hdr">
-      <div><div style="font-size:12px;font-weight:600">05 — WebFilter Cache</div><div style="font-size:10px;color:#64748b">FortiGuard cache optimization</div></div>
-      <label class="tog"><input type="checkbox" id="tog-wfc" checked onchange="render()"><span>Xuat CLI</span></label>
-    </div>
-    <div class="opt-body">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap">
-        <span style="font-size:11px;font-weight:500;color:#374151;min-width:110px">cache-mode</span>
-        <select class="fi" id="wfc-mode" style="width:auto" onchange="render()"><option value="ttl">ttl</option><option value="db">db</option></select>
-      </div>
-      <label class="chk" style="margin-top:2px"><input type="checkbox" id="wfc-prefix" checked onchange="render()"><span>cache-prefix-match enable</span></label>
-    </div>
-  </div>
-
-  <div class="opt-card">
-    <div class="opt-hdr">
-      <div><div style="font-size:12px;font-weight:600">06 — DNS Log Disable</div><div style="font-size:10px;color:#64748b">Tat log-all-domain</div></div>
-      <label class="tog"><input type="checkbox" id="tog-dns7" checked onchange="render()"><span>Xuat CLI</span></label>
-    </div>
-    <div class="opt-body">
-      <div id="dns7-chips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px"></div>
-      <div style="display:flex;gap:6px;align-items:center">
-        <input class="fi" id="dns7-new" placeholder="Ten profile" style="max-width:200px" onkeydown="if(event.key==='Enter')addDns7()">
-        <button class="btn-s" onclick="addDns7()">+ Them</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="opt-card">
-    <div class="opt-hdr">
-      <div><div style="font-size:12px;font-weight:600">07 — Admin Timeout</div><div style="font-size:10px;color:#64748b">admintimeout (phut)</div></div>
-      <label class="tog"><input type="checkbox" id="tog-adm" checked onchange="render()"><span>Xuat CLI</span></label>
-    </div>
-    <div class="opt-body">
-      <div style="display:flex;align-items:center;gap:10px">
-        <span style="font-size:11px;font-weight:500;color:#374151">admintimeout</span>
-        <input type="number" id="adm-timeout" value="10" min="1" max="480" style="width:70px;font-size:11px;padding:3px 7px;border:1px solid #cbd5e1;border-radius:5px" onchange="render()">
-        <span style="font-size:10px;color:#94a3b8">phut</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="opt-card">
-    <div class="opt-hdr">
-      <div><div style="font-size:12px;font-weight:600">08 — Xoa UTM Policy low-risk</div><div style="font-size:10px;color:#64748b">unset toan bo UTM profiles</div></div>
-      <label class="tog"><input type="checkbox" id="tog-noutm" checked onchange="render()"><span>Xuat CLI</span></label>
-    </div>
-    <div class="opt-body">
-      <div class="noutm-grid" id="noutm-list"></div>
-      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-        <input class="fi" id="noutm-id" type="number" placeholder="Policy ID" style="width:80px">
-        <input class="fi" id="noutm-name" placeholder="Mo ta" style="max-width:180px">
-        <button class="btn-s" onclick="addNoUtm()">+ Them</button>
-      </div>
-    </div>
-  </div>
-
-</div>
-</div><!-- /left -->
-
-<!-- CLI -->
-<div class="right">
-  <div class="cli-bar">
-    <div class="cli-dots">
-      <div class="dot" style="background:#ff5f56"></div>
-      <div class="dot" style="background:#ffbd2e"></div>
-      <div class="dot" style="background:#27c93f"></div>
-    </div>
-    <span class="cli-meta" id="cli-meta">-- phan</span>
-    <button class="btn-ca" id="btn-all" onclick="copyAll()">Copy All</button>
-  </div>
-  <div class="cli-body" id="cli-body">
-    <div class="cli-empty">Them profiles va policies de bat dau sinh CLI.</div>
-  </div>
-</div>
-</div>
+<!-- FAB -->
+<button onclick="copyAll()" class="fixed bottom-8 z-50 bg-[#2160a0] text-white p-4 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.5)] hover:scale-110 transition-transform md:flex items-center gap-2 hidden border border-white/10" style="right:520px">
+  <span class="material-symbols-outlined">bolt</span>
+  <span class="font-bold text-sm pr-2">Optimize CLI</span>
+</button>
 
 <script>
 const CD = {"wf":[{"group":"Potentially Liable","name":"Drug Abuse","id":1,"desc":"Chặn nội dung liên quan đến sử dụng, buôn bán hoặc quảng bá ma túy trái phép.","general":"Block","tech":"Block","seo":"Block","tckt":"Block","itsm":"Block","guest":"Block"},{"group":"Potentially Liable","name":"Hacking","id":9,"desc":"Chặn các trang hướng dẫn hoặc cung cấp công cụ tấn công, xâm nhập hệ thống.","general":"Block","tech":"Block","seo":"Block","tckt":"Block","itsm":"Block","guest":"Block"},{"group":"Potentially Liable","name":"Illegal or Unethical","id":3,"desc":"Chặn nội dung khuyến khích hành vi vi phạm pháp luật hoặc đạo đức.","general":"Block","tech":"Block","seo":"Block","tckt":"Block","itsm":"Block","guest":"Block"},{"group":"Potentially Liable","name":"Discrimination","id":5,"desc":"Chặn nội dung mang tính phân biệt đối xử hoặc kích động thù ghét.","general":"Block","tech":"Block","seo":"Block","tckt":"Block","itsm":"Block","guest":"Block"},{"group":"Potentially Liable","name":"Explicit Violence","id":6,"desc":"Chặn nội dung mô tả bạo lực nghiêm trọng hoặc gây sốc.","general":"Block","tech":"Block","seo":"Block","tckt":"Block","itsm":"Block","guest":"Block"},{"group":"Potentially Liable","name":"Extremist Groups","id":63,"desc":"Chặn nội dung liên quan đến các tổ chức cực đoan hoặc tư tưởng cực đoan.","general":"Block","tech":"Block","seo":"Block","tckt":"Block","itsm":"Block","guest":"Block"},{"group":"Potentially Liable","name":"Proxy Avoidance","id":7,"desc":"Chặn các công cụ và dịch vụ vượt qua kiểm soát mạng và chính sách bảo mật.","general":"Block","tech":"Block","seo":"Block","tckt":"Block","itsm":"Block","guest":"Block"},{"group":"Potentially Liable","name":"Plagiarism","id":16,"desc":"Chặn nội dung hỗ trợ sao chép trái phép hoặc vi phạm bản quyền.","general":"Block","tech":"Block","seo":"Block","tckt":"Block","itsm":"Block","guest":"Block"},{"group":"Potentially Liable","name":"Child Sexual Abuse","id":15,"desc":"Chặn nội dung lạm dụng hoặc khai thác tình dục trẻ em.","general":"Block","tech":"Block","seo":"Block","tckt":"Block","itsm":"Block","guest":"Block"},{"group":"Potentially Liable","name":"Terrorism","id":65,"desc":"Chặn nội dung tuyên truyền, hỗ trợ hoặc liên quan đến khủng bố.","general":"Block","tech":"Block","seo":"Block","tckt":"Block","itsm":"Block","guest":"Block"},{"group":"Potentially Liable","name":"Crypto Mining","id":67,"desc":"Chặn các trang hoặc script khai thác tiền điện tử trái phép trên thiết bị người dùng.","general":"Block","tech":"Block","seo":"Block","tckt":"Block","itsm":"Block","guest":"Block"},{"group":"Potentially Liable","name":"Potentially Unwanted Program","id":14,"desc":"Chặn phần mềm không mong muốn có thể gây rủi ro bảo mật hoặc ảnh hưởng hiệu suất.","general":"Block","tech":"Block","seo":"Block","tckt":"Block","itsm":"Block","guest":"Block"},{"group":"Adult/Mature Content","name":"Alternative Beliefs","id":13,"desc":"Chặn nội dung liên quan đến tín ngưỡng hoặc niềm tin thay thế không chính thống.","general":"Block","tech":"Block","seo":"Block","tckt":"Block","itsm":"Block","guest":"Block"},{"group":"Adult/Mature Content","name":"Abortion","id":4,"desc":"Chặn nội dung thảo luận hoặc quảng bá liên quan đến phá thai.","general":"Block","tech":"Block","seo":"Block","tckt":"Block","itsm":"Block","guest":"Block"},{"group":"Adult/Mature Content","name":"Other Adult Materials","id":99,"desc":"Chặn các nội dung người lớn không thuộc các nhóm phân loại cụ thể.","general":"Block","tech":"Block","seo":"Block","tckt":"Block","itsm":"Block","guest":"Block"},{"group":"Adult/Mature Content","name":"Advocacy Organizations","id":56,"desc":"Chặn nội dung từ các tổ chức vận động hoặc gây ảnh hưởng xã hội.","general":"Block","tech":"Block","seo":"Block","tckt":"Block","itsm":"Block","guest":"Block"},{"group":"Adult/Mature Content","name":"Gambling","id":8,"desc":"Chặn các trang web cờ bạc, cá cược trực tuyến.","general":"Block","tech":"Block","seo":"Block","tckt":"Block","itsm":"Block","guest":"Block"},{"group":"Adult/Mature Content","name":"Nudity and Risque","id":20,"desc":"Chặn nội dung khỏa thân hoặc hình ảnh khiêu gợi.","general":"Block","tech":"Block","seo":"Block","tckt":"Block","itsm":"Block","guest":"Block"},{"group":"Adult/Mature Content","name":"Pornography","id":21,"desc":"Chặn nội dung khiêu dâm hoặc mang tính tình dục rõ ràng.","general":"Block","tech":"Block","seo":"Block","tckt":"Block","itsm":"Block","guest":"Block"},{"group":"Adult/Mature Content","name":"Dating","id":62,"desc":"Chặn các trang web và ứng dụng hẹn hò trực tuyến.","general":"Block","tech":"Block","seo":"Block","tckt":"Block","itsm":"Block","guest":"Block"},{"group":"Adult/Mature Content","name":"Weapons (Sales)","id":26,"desc":"Chặn các trang bán hoặc quảng bá vũ khí.","general":"Block","tech":"Block","seo":"Block","tckt":"Block","itsm":"Block","guest":"Block"},{"group":"Adult/Mature Content","name":"Marijuana","id":57,"desc":"Chặn nội dung liên quan đến sử dụng hoặc buôn bán cần sa.","general":"Block","tech":"Block","seo":"Block","tckt":"Block","itsm":"Block","guest":"Block"},{"group":"Adult/Mature Content","name":"Sex Education","id":25,"desc":"Chặn nội dung giáo dục giới tính không phù hợp với chính sách tổ chức.","general":"Block","tech":"Block","seo":"Block","tckt":"Block","itsm":"Block","guest":"Block"},{"group":"Adult/Mature Content","name":"Alcohol","id":59,"desc":"Chặn nội dung quảng bá hoặc mua bán đồ uống có cồn.","general":"Block","tech":"Block","seo":"Block","tckt":"Block","itsm":"Block","guest":"Block"},{"group":"Adult/Mature Content","name":"Tobacco","id":72,"desc":"Chặn nội dung quảng bá hoặc mua bán thuốc lá.","general":"Block","tech":"Block","seo":"Block","tckt":"Block","itsm":"Block","guest":"Block"},{"group":"Adult/Mature Content","name":"Lingerie and Swimsuit","id":61,"desc":"Chặn nội dung thời trang mang tính gợi cảm.","general":"Block","tech":"Block","seo":"Block","tckt":"Block","itsm":"Block","guest":"Block"},{"group":"Adult/Mature Content","name":"Sports Hunting and War Games","id":29,"desc":"Chặn nội dung liên quan đến săn bắn, trò chơi chiến tranh hoặc mô phỏng bạo lực.","general":"Block","tech":"Block","seo":"Block","tckt":"Block","itsm":"Block","guest":"Block"},{"group":"Bandwidth Consuming","name":"Freeware and Software Downloads","id":85,"desc":"Chặn các trang tải phần mềm miễn phí nhằm giảm rủi ro mã độc và phần mềm không mong muốn.","general":"Block","tech":"Block","seo":"Block","tckt":"Block","itsm":"Block","guest":"Allow"},{"group":"Bandwidth Consuming","name":"File Sharing and Storage","id":29,"desc":"Chặn các dịch vụ lưu trữ và chia sẻ file trực tuyến nhằm kiểm soát dữ liệu ra ngoài tổ chức.","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Block"},{"group":"Bandwidth Consuming","name":"Streaming Media and Download","id":28,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"Bandwidth Consuming","name":"Peer-to-peer File Sharing","id":90,"desc":"Chặn các dịch vụ chia sẻ ngang hàng để ngăn rò rỉ dữ liệu và vi phạm bản quyền.","general":"Block","tech":"Block","seo":"Block","tckt":"Block","itsm":"Block","guest":"Block"},{"group":"Bandwidth Consuming","name":"Internet Radio and TV","id":88,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"Bandwidth Consuming","name":"Internet Telephony","id":17,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"Security Risk","name":"Malicious Websites","id":2,"desc":"Chặn các trang web chứa hoặc phát tán mã độc.","general":"Block","tech":"Block","seo":"Block","tckt":"Block","itsm":"Block","guest":"Block"},{"group":"Security Risk","name":"Phishing","id":11,"desc":"Chặn các trang web giả mạo nhằm đánh cắp thông tin đăng nhập hoặc dữ liệu nhạy cảm.","general":"Block","tech":"Block","seo":"Block","tckt":"Block","itsm":"Block","guest":"Block"},{"group":"Security Risk","name":"Spam URLs","id":12,"desc":"Chặn các đường link phát tán spam hoặc nội dung không mong muốn.","general":"Block","tech":"Block","seo":"Block","tckt":"Block","itsm":"Block","guest":"Block"},{"group":"Security Risk","name":"Dynamic DNS","id":91,"desc":"Chặn các dịch vụ DNS động thường bị lợi dụng để che giấu hạ tầng tấn công.","general":"Block","tech":"Block","seo":"Block","tckt":"Block","itsm":"Block","guest":"Block"},{"group":"Security Risk","name":"Newly Observed Domain","id":40,"desc":"Chặn các tên miền mới xuất hiện chưa đủ độ tin cậy.","general":"Monitor","tech":"Block","seo":"Block","tckt":"Monitor","itsm":"Block","guest":"Block"},{"group":"Security Risk","name":"Newly Registered Domain","id":41,"desc":"Chặn các tên miền mới đăng ký, thường được sử dụng trong các chiến dịch tấn công ngắn hạn.","general":"Block","tech":"Block","seo":"Block","tckt":"Monitor","itsm":"Block","guest":"Block"},{"group":"General Interest - Personal","name":"Advertising","id":45,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Personal","name":"Brokerage and Trading","id":46,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Personal","name":"Games","id":83,"desc":"Chặn các trang web và dịch vụ trò chơi nhằm hạn chế sao nhãng công việc và tiêu tốn tài nguyên mạng.","general":"Block","tech":"Block","seo":"Block","tckt":"Block","itsm":"Block","guest":"Block"},{"group":"General Interest - Personal","name":"Web-based Email","id":47,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Personal","name":"Entertainment","id":49,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Personal","name":"Arts and Culture","id":50,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Personal","name":"Education","id":51,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Personal","name":"Health and Wellness","id":52,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Personal","name":"Job Search","id":53,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Personal","name":"Medicine","id":54,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Personal","name":"News and Media","id":55,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Personal","name":"Social Networking","id":91,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Personal","name":"Political Organizations","id":93,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Personal","name":"Reference","id":58,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Personal","name":"Global Religion","id":59,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Personal","name":"Shopping","id":60,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Personal","name":"Society and Lifestyles","id":61,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Personal","name":"Sports","id":62,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Personal","name":"Travel","id":63,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Personal","name":"Personal Vehicles","id":64,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Personal","name":"Dynamic Content","id":65,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Personal","name":"Meaningless Content","id":66,"desc":"Chặn các trang nội dung không có giá trị thông tin hoặc mục đích rõ ràng.","general":"Block","tech":"Block","seo":"Monitor","tckt":"Monitor","itsm":"Block","guest":"Block"},{"group":"General Interest - Personal","name":"Folklore","id":67,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Personal","name":"Web Chat","id":68,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Personal","name":"Instant Messaging","id":69,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Personal","name":"Newsgroups and Message Boards","id":70,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Personal","name":"Digital Postcards","id":71,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Personal","name":"Child Education","id":72,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Personal","name":"Real Estate","id":73,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Personal","name":"Restaurant and Dining","id":74,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Personal","name":"Personal Websites and Blogs","id":75,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Personal","name":"Content Servers","id":76,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Personal","name":"Domain Parking","id":77,"desc":"Chặn các tên miền giữ chỗ, thường chứa quảng cáo hoặc link không an toàn.","general":"Block","tech":"Block","seo":"Block","tckt":"Block","itsm":"Block","guest":"Block"},{"group":"General Interest - Personal","name":"Personal Privacy","id":78,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Personal","name":"Auction","id":79,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Business","name":"Finance and Banking","id":81,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Business","name":"Search Engines and Portals","id":82,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Business","name":"General Organizations","id":83,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Business","name":"Business","id":84,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Business","name":"Information and Computer Security","id":85,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Business","name":"Government and Legal Organizations","id":86,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Business","name":"Information Technology","id":87,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Business","name":"Armed Forces","id":88,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Business","name":"Web Hosting","id":89,"desc":"Chặn các dịch vụ lưu trữ website nhằm giảm nguy cơ truy cập hoặc phát tán nội dung độc hại.","general":"Block","tech":"Block","seo":"Monitor","tckt":"Monitor","itsm":"Block","guest":"Block"},{"group":"General Interest - Business","name":"Secure Websites","id":90,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Business","name":"Web-based Applications","id":91,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Business","name":"Charitable Organizations","id":92,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Business","name":"Remote Access","id":93,"desc":"Chặn các dịch vụ truy cập từ xa để ngăn kết nối trái phép vào hệ thống nội bộ.","general":"Block","tech":"Block","seo":"Block","tckt":"Block","itsm":"Block","guest":"Block"},{"group":"General Interest - Business","name":"Web Analytics","id":94,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Business","name":"Online Meeting","id":95,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Business","name":"URL Shortening","id":96,"desc":"Chặn các dịch vụ rút gọn URL nhằm hạn chế che giấu đích đến độc hại.","general":"Monitor","tech":"Block","seo":"Monitor","tckt":"Monitor","itsm":"Block","guest":"Block"},{"group":"General Interest - Business","name":"Artificial Intelligence Technology","id":97,"desc":"","general":"Allow","tech":"Allow","seo":"Allow","tckt":"Allow","itsm":"Allow","guest":"Allow"},{"group":"General Interest - Business","name":"Cryptocurrency","id":98,"desc":"Chặn các trang liên quan đến tiền mã hóa nhằm giảm rủi ro gian lận và lạm dụng tài nguyên.","general":"Block","tech":"Block","seo":"Block","tckt":"Block","itsm":"Allow","guest":"Block"},{"group":"Unrated","name":"Unrated","id":100,"desc":"Chặn các website chưa được phân loại nhằm giảm rủi ro truy cập nội dung không xác định hoặc độc hại.","general":"Monitor","tech":"Block","seo":"Monitor","tckt":"Monitor","itsm":"Block","guest":"Block"}],"ap":[{"group":"","name":"Business","id":28,"desc":"Kiểm soát các ứng dụng phục vụ hoạt động kinh doanh nhằm đảm bảo an toàn và tuân thủ chính sách sử dụng.","general":"Allow","itism":"Allow","tech":"Allow"},{"group":"","name":"Email","id":3,"desc":"Kiểm soát các ứng dụng email nhằm bảo vệ dữ liệu và ngăn chặn lạm dụng hoặc tấn công qua thư điện tử.","general":"Allow","itism":"Allow","tech":"Allow"},{"group":"","name":"General Interest","id":48,"desc":"Kiểm soát các ứng dụng phục vụ mục đích giải trí hoặc cá nhân nhằm hạn chế sao nhãng và rủi ro bảo mật.","general":"Allow","itism":"Allow","tech":"Allow"},{"group":"","name":"P2P","id":6,"desc":"Kiểm soát các ứng dụng chia sẻ ngang hàng nhằm ngăn rò rỉ dữ liệu, vi phạm bản quyền và lạm dụng băng thông.","general":"Block","itism":"Block","tech":"Block"},{"group":"","name":"Social.Media","id":25,"desc":"Kiểm soát các ứng dụng mạng xã hội nhằm giảm rủi ro rò rỉ dữ liệu và hạn chế sao nhãng trong giờ làm việc.","general":"Allow","itism":"Allow","tech":"Allow"},{"group":"","name":"Video/Audio","id":21,"desc":"Kiểm soát các ứng dụng truyền tải video và âm thanh nhằm hạn chế tiêu thụ băng thông và giảm sao nhãng công việc.","general":"Allow","itism":"Allow","tech":"Allow"},{"group":"","name":"Unknown Applications","id":31,"desc":"Kiểm soát các ứng dụng chưa được nhận diện nhằm giảm rủi ro bảo mật từ lưu lượng không xác định.","general":"Allow","itism":"Allow","tech":"Allow"},{"group":"","name":"Cloud/IT","id":30,"desc":"Kiểm soát các ứng dụng dịch vụ đám mây và CNTT nhằm bảo vệ dữ liệu và hạ tầng hệ thống.","general":"Allow","itism":"Allow","tech":"Allow"},{"group":"","name":"Game","id":2,"desc":"Kiểm soát các ứng dụng trò chơi nhằm hạn chế sao nhãng và tiêu tốn tài nguyên mạng.","general":"Block","itism":"Block","tech":"Block"},{"group":"","name":"Storage/Backup","id":29,"desc":"Kiểm soát các ứng dụng lưu trữ và sao lưu dữ liệu để ngăn rò rỉ thông tin ra bên ngoài.","general":"Allow","itism":"Allow","tech":"Allow"},{"group":"","name":"VoIP","id":12,"desc":"Kiểm soát các ứng dụng thoại qua IP nhằm đảm bảo chất lượng dịch vụ và an ninh liên lạc.","general":"Allow","itism":"Allow","tech":"Allow"},{"group":"","name":"Collaboration","id":23,"desc":"Kiểm soát các ứng dụng cộng tác làm việc để đảm bảo sử dụng đúng mục đích và an toàn dữ liệu.","general":"Allow","itism":"Allow","tech":"Allow"},{"group":"","name":"GenAI","id":30,"desc":"Kiểm soát các ứng dụng trí tuệ nhân tạo tạo sinh nhằm hạn chế rủi ro rò rỉ dữ liệu và nội dung không phù hợp.","general":"Allow","itism":"Allow","tech":"Allow"},{"group":"","name":"Network Service","id":5,"desc":"Kiểm soát các dịch vụ mạng nền tảng nhằm ngăn lạm dụng hoặc truy cập trái phép.","general":"Allow","itism":"Allow","tech":"Allow"},{"group":"","name":"Remote Access","id":8,"desc":"Kiểm soát các ứng dụng truy cập từ xa để ngăn kết nối không được ủy quyền vào hệ thống nội bộ.","general":"Block","itism":"Block","tech":"Block"},{"group":"","name":"Software Update","id":15,"desc":"Kiểm soát lưu lượng cập nhật phần mềm nhằm đảm bảo nguồn cập nhật hợp lệ và an toàn.","general":"Allow","itism":"Allow","tech":"Allow"},{"group":"","name":"Web Client","id":17,"desc":"Kiểm soát các ứng dụng truy cập web nhằm giảm rủi ro từ trình duyệt và nội dung trực tuyến.","general":"Allow","itism":"Allow","tech":"Allow"},{"group":"","name":"Mobile","id":36,"desc":"Kiểm soát các ứng dụng di động nhằm bảo vệ dữ liệu và tuân thủ chính sách sử dụng thiết bị.","general":"Allow","itism":"Allow","tech":"Allow"},{"group":"","name":"Proxy","id":7,"desc":"Kiểm soát các ứng dụng proxy nhằm ngăn chặn việc vượt qua chính sách kiểm soát truy cập mạng.","general":"Block","itism":"Block","tech":"Block"},{"group":"Application and Filter Overrides","name":"Anydesk","id":40320,"desc":"","general":"Allow","itism":"Allow","tech":"Allow"},{"group":"Application and Filter Overrides","name":"Ultraview","id":42154,"desc":"","general":"Allow","itism":"Allow","tech":"Allow"},{"group":"Application and Filter Overrides","name":"RDP","id":15511,"desc":"","general":"Block","itism":"Allow","tech":"Block"},{"group":"Application and Filter Overrides","name":"HTTP:BROWSER","id":48424,"desc":"","general":"Block","itism":"Allow","tech":"Block"},{"group":"Application and Filter Overrides","name":"OpenVPN","id":17244,"desc":"","general":"Allow","itism":"Allow","tech":"Allow"}],"dns":[{"group":"Adult/Mature Content","name":"Alternative Beliefs","id":13,"desc":"Chặn truy vấn DNS đến các trang liên quan tín ngưỡng hoặc niềm tin thay thế không phù hợp với chính sách tổ chức.","general":"Redirect to Block Portal","seo":"Redirect to Block Portal","tckt":"Redirect to Block Portal"},{"group":"Adult/Mature Content","name":"Abortion","id":4,"desc":"Chặn truy cập DNS tới các nội dung liên quan đến phá thai theo chính sách sử dụng mạng.","general":"Redirect to Block Portal","seo":"Redirect to Block Portal","tckt":"Redirect to Block Portal"},{"group":"Adult/Mature Content","name":"Other Adult Materials","id":99,"desc":"Chặn các tên miền chứa nội dung người lớn không được phân loại cụ thể.","general":"Redirect to Block Portal","seo":"Redirect to Block Portal","tckt":"Redirect to Block Portal"},{"group":"Adult/Mature Content","name":"Advocacy Organizations","id":56,"desc":"Chặn truy vấn DNS tới các tổ chức vận động nhằm hạn chế nội dung gây tranh cãi hoặc ảnh hưởng môi trường làm việc.","general":"Redirect to Block Portal","seo":"Redirect to Block Portal","tckt":"Redirect to Block Portal"},{"group":"Adult/Mature Content","name":"Gambling","id":8,"desc":"Chặn DNS đến các trang cờ bạc, cá cược trực tuyến.","general":"Redirect to Block Portal","seo":"Redirect to Block Portal","tckt":"Redirect to Block Portal"},{"group":"Adult/Mature Content","name":"Nudity and Risque","id":20,"desc":"Chặn DNS tới các nội dung khỏa thân hoặc mang tính khiêu gợi.","general":"Redirect to Block Portal","seo":"Redirect to Block Portal","tckt":"Redirect to Block Portal"},{"group":"Adult/Mature Content","name":"Pornography","id":21,"desc":"Chặn DNS đến các trang web khiêu dâm hoặc nội dung tình dục rõ ràng.","general":"Redirect to Block Portal","seo":"Redirect to Block Portal","tckt":"Redirect to Block Portal"},{"group":"Adult/Mature Content","name":"Dating","id":62,"desc":"Chặn DNS tới các dịch vụ và ứng dụng hẹn hò trực tuyến.","general":"Redirect to Block Portal","seo":"Redirect to Block Portal","tckt":"Redirect to Block Portal"},{"group":"Adult/Mature Content","name":"Weapons (Sales)","id":26,"desc":"Chặn DNS đến các trang mua bán hoặc quảng bá vũ khí.","general":"Redirect to Block Portal","seo":"Redirect to Block Portal","tckt":"Redirect to Block Portal"},{"group":"Adult/Mature Content","name":"Marijuana","id":57,"desc":"Chặn DNS tới các nội dung liên quan sử dụng hoặc buôn bán cần sa.","general":"Redirect to Block Portal","seo":"Redirect to Block Portal","tckt":"Redirect to Block Portal"},{"group":"Adult/Mature Content","name":"Sex Education","id":25,"desc":"Chặn DNS tới các nội dung giáo dục giới tính không phù hợp với chính sách doanh nghiệp.","general":"Redirect to Block Portal","seo":"Redirect to Block Portal","tckt":"Redirect to Block Portal"},{"group":"Adult/Mature Content","name":"Alcohol","id":59,"desc":"Chặn DNS đến các trang quảng bá hoặc kinh doanh đồ uống có cồn.","general":"Redirect to Block Portal","seo":"Redirect to Block Portal","tckt":"Redirect to Block Portal"},{"group":"Adult/Mature Content","name":"Tobacco","id":72,"desc":"Chặn DNS tới các trang quảng bá hoặc mua bán thuốc lá.","general":"Redirect to Block Portal","seo":"Redirect to Block Portal","tckt":"Redirect to Block Portal"},{"group":"Adult/Mature Content","name":"Lingerie and Swimsuit","id":61,"desc":"Chặn DNS tới các nội dung thời trang mang tính gợi cảm.","general":"Redirect to Block Portal","seo":"Redirect to Block Portal","tckt":"Redirect to Block Portal"},{"group":"Adult/Mature Content","name":"Sports Hunting and War Games","id":29,"desc":"Chặn DNS đến các nội dung liên quan săn bắn, trò chơi chiến tranh hoặc mô phỏng bạo lực.","general":"Redirect to Block Portal","seo":"Redirect to Block Portal","tckt":"Redirect to Block Portal"},{"group":"Bandwidth Consuming","name":"Freeware and Software Downloads","id":85,"desc":"Các website cung cấp phần mềm miễn phí, tiện ích, tool cài đặt (crack hoặc không crack), driver, installer.","general":"Redirect to Block Portal","seo":"Redirect to Block Portal","tckt":"Redirect to Block Portal"},{"group":"Bandwidth Consuming","name":"File Sharing and Storage","id":29,"desc":"Các dịch vụ và giao thức chia sẻ file ngang hàng (P2P) như torrent, magnet link, seed/leech.","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"Bandwidth Consuming","name":"Streaming Media and Download","id":28,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"Bandwidth Consuming","name":"Peer-to-peer File Sharing","id":90,"desc":"","general":"Redirect to Block Portal","seo":"Redirect to Block Portal","tckt":"Redirect to Block Portal"},{"group":"Bandwidth Consuming","name":"Internet Radio and TV","id":88,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"Bandwidth Consuming","name":"Internet Telephony","id":17,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Business","name":"Finance and Banking","id":81,"desc":"Các nền tảng cung cấp dịch vụ lưu trữ website và domain cho cá nhân hoặc tổ chức.","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Business","name":"Search Engines and Portals","id":82,"desc":"Các dịch vụ cho phép truy cập máy tính, hệ thống từ xa qua Internet.","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Business","name":"General Organizations","id":83,"desc":"Các dịch vụ rút gọn đường link (bit.ly, tinyurl, v.v.).","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Business","name":"Business","id":84,"desc":"Các website và dịch vụ liên quan đến tiền mã hóa, ví điện tử, sàn giao dịch, blockchain.","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Business","name":"Information and Computer Security","id":85,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Business","name":"Government and Legal Organizations","id":86,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Business","name":"Information Technology","id":87,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Business","name":"Armed Forces","id":88,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Business","name":"Web Hosting","id":89,"desc":"","general":"Redirect to Block Portal","seo":"Monitor","tckt":"Monitor"},{"group":"General Interest - Business","name":"Secure Websites","id":90,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Business","name":"Web-based Applications","id":91,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Business","name":"Charitable Organizations","id":92,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Business","name":"Remote Access","id":93,"desc":"","general":"Redirect to Block Portal","seo":"Redirect to Block Portal","tckt":"Redirect to Block Portal"},{"group":"General Interest - Business","name":"Web Analytics","id":94,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Business","name":"Online Meeting","id":95,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Business","name":"URL Shortening","id":96,"desc":"","general":"Monitor","seo":"Monitor","tckt":"Monitor"},{"group":"General Interest - Business","name":"Artificial Intelligence Technology","id":97,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Business","name":"Cryptocurrency","id":98,"desc":"","general":"Redirect to Block Portal","seo":"Redirect to Block Portal","tckt":"Redirect to Block Portal"},{"group":"General Interest - Personal","name":"Advertising","id":45,"desc":"Website có nội dung rỗng, không giá trị, auto-generated hoặc chỉ để tăng traffic.","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Personal","name":"Brokerage and Trading","id":46,"desc":"Domain chưa sử dụng nội dung chính, chỉ hiển thị quảng cáo hoặc trang giữ chỗ.","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Personal","name":"Games","id":83,"desc":"Website và dịch vụ liên quan đến trò chơi trực tuyến và giải trí.","general":"Redirect to Block Portal","seo":"Redirect to Block Portal","tckt":"Redirect to Block Portal"},{"group":"General Interest - Personal","name":"Web-based Email","id":47,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Personal","name":"Entertainment","id":49,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Personal","name":"Arts and Culture","id":50,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Personal","name":"Education","id":51,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Personal","name":"Health and Wellness","id":52,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Personal","name":"Job Search","id":53,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Personal","name":"Medicine","id":54,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Personal","name":"News and Media","id":55,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Personal","name":"Social Networking","id":91,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Personal","name":"Political Organizations","id":93,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Personal","name":"Reference","id":58,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Personal","name":"Global Religion","id":59,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Personal","name":"Shopping","id":60,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Personal","name":"Society and Lifestyles","id":61,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Personal","name":"Sports","id":62,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Personal","name":"Travel","id":63,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Personal","name":"Personal Vehicles","id":64,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Personal","name":"Dynamic Content","id":65,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Personal","name":"Meaningless Content","id":66,"desc":"","general":"Redirect to Block Portal","seo":"Monitor","tckt":"Monitor"},{"group":"General Interest - Personal","name":"Folklore","id":67,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Personal","name":"Web Chat","id":68,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Personal","name":"Instant Messaging","id":69,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Personal","name":"Newsgroups and Message Boards","id":70,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Personal","name":"Digital Postcards","id":71,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Personal","name":"Child Education","id":72,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Personal","name":"Real Estate","id":73,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Personal","name":"Restaurant and Dining","id":74,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Personal","name":"Personal Websites and Blogs","id":75,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Personal","name":"Content Servers","id":76,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Personal","name":"Domain Parking","id":77,"desc":"","general":"Redirect to Block Portal","seo":"Redirect to Block Portal","tckt":"Redirect to Block Portal"},{"group":"General Interest - Personal","name":"Personal Privacy","id":78,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"General Interest - Personal","name":"Auction","id":79,"desc":"","general":"Allow","seo":"Allow","tckt":"Allow"},{"group":"Potentially Liable","name":"Drug Abuse","id":1,"desc":"Nội dung liên quan đến sử dụng, mua bán hoặc hướng dẫn sử dụng chất cấm.","general":"Redirect to Block Portal","seo":"Redirect to Block Portal","tckt":"Redirect to Block Portal"},{"group":"Potentially Liable","name":"Hacking","id":9,"desc":"Website chia sẻ công cụ, kỹ thuật tấn công, khai thác lỗ hổng trái phép.","general":"Redirect to Block Portal","seo":"Redirect to Block Portal","tckt":"Redirect to Block Portal"},{"group":"Potentially Liable","name":"Illegal or Unethical","id":3,"desc":"Nội dung hướng dẫn hoặc cổ vũ hành vi trái pháp luật hoặc phi đạo đức.","general":"Redirect to Block Portal","seo":"Redirect to Block Portal","tckt":"Redirect to Block Portal"},{"group":"Potentially Liable","name":"Discrimination","id":5,"desc":"Nội dung mang tính kỳ thị, thù ghét chủng tộc, giới tính, tôn giáo.","general":"Redirect to Block Portal","seo":"Redirect to Block Portal","tckt":"Redirect to Block Portal"},{"group":"Potentially Liable","name":"Explicit Violence","id":6,"desc":"Nội dung bạo lực nghiêm trọng, máu me, gây sốc.","general":"Redirect to Block Portal","seo":"Redirect to Block Portal","tckt":"Redirect to Block Portal"},{"group":"Potentially Liable","name":"Extremist Groups","id":63,"desc":"Website liên quan đến tổ chức cực đoan hoặc tư tưởng bạo lực.","general":"Redirect to Block Portal","seo":"Redirect to Block Portal","tckt":"Redirect to Block Portal"},{"group":"Potentially Liable","name":"Proxy Avoidance","id":7,"desc":"Dịch vụ VPN, proxy, tunnel dùng để vượt qua kiểm soát mạng.","general":"Redirect to Block Portal","seo":"Redirect to Block Portal","tckt":"Redirect to Block Portal"},{"group":"Potentially Liable","name":"Plagiarism","id":16,"desc":"Website hỗ trợ sao chép, gian lận nội dung hoặc đạo văn.","general":"Redirect to Block Portal","seo":"Redirect to Block Portal","tckt":"Redirect to Block Portal"},{"group":"Potentially Liable","name":"Child Sexual Abuse","id":15,"desc":"Nội dung lạm dụng tình dục trẻ em.","general":"Redirect to Block Portal","seo":"Redirect to Block Portal","tckt":"Redirect to Block Portal"},{"group":"Potentially Liable","name":"Terrorism","id":65,"desc":"Nội dung tuyên truyền, hỗ trợ hoặc liên quan đến khủng bố.","general":"Redirect to Block Portal","seo":"Redirect to Block Portal","tckt":"Redirect to Block Portal"},{"group":"Potentially Liable","name":"Crypto Mining","id":67,"desc":"Website hoặc dịch vụ đào tiền mã hóa.","general":"Redirect to Block Portal","seo":"Redirect to Block Portal","tckt":"Redirect to Block Portal"},{"group":"Potentially Liable","name":"Potentially Unwanted Program","id":14,"desc":"Phần mềm không mong muốn như adware, toolbar, bundle.","general":"Redirect to Block Portal","seo":"Redirect to Block Portal","tckt":"Redirect to Block Portal"},{"group":"Security Risk","name":"Malicious Websites","id":2,"desc":"Website chứa mã độc, exploit hoặc hành vi gây hại.","general":"Redirect to Block Portal","seo":"Redirect to Block Portal","tckt":"Redirect to Block Portal"},{"group":"Security Risk","name":"Phishing","id":11,"desc":"Website giả mạo nhằm đánh cắp tài khoản hoặc thông tin nhạy cảm.","general":"Redirect to Block Portal","seo":"Redirect to Block Portal","tckt":"Redirect to Block Portal"},{"group":"Security Risk","name":"Spam URLs","id":12,"desc":"URL được sử dụng để phát tán spam hoặc quảng cáo độc hại.","general":"Redirect to Block Portal","seo":"Redirect to Block Portal","tckt":"Redirect to Block Portal"},{"group":"Security Risk","name":"Dynamic DNS","id":91,"desc":"Tên miền dùng DNS động, thường thay đổi IP liên tục.","general":"Redirect to Block Portal","seo":"Redirect to Block Portal","tckt":"Redirect to Block Portal"},{"group":"Security Risk","name":"Newly Observed Domain","id":40,"desc":"Tên miền mới xuất hiện, chưa đủ dữ liệu đánh giá.","general":"Monitor","seo":"Redirect to Block Portal","tckt":"Monitor"},{"group":"Security Risk","name":"Newly Registered Domain","id":41,"desc":"Tên miền vừa được đăng ký trong thời gian ngắn.","general":"Redirect to Block Portal","seo":"Redirect to Block Portal","tckt":"Monitor"},{"group":"Unrated","name":"Unrated","id":100,"desc":"Tên miền chưa được FortiGuard phân loại hoặc chưa có đủ thông tin đánh giá.","general":"Monitor","seo":"Monitor","tckt":"Monitor"}]};
@@ -807,8 +876,8 @@ function rebuildPM(type) {
   const addFn  = isAv ? 'addAvProfile()' : `addGenProfile('${type}')`;
   const bar = document.getElementById(pmId);
   if(!bar) return;
-  let h = '<span class="pm-lbl">Profiles:</span>';
-  if(!profs.length) h += '<span class="pm-hint">Chua co profile</span>';
+  let h = '<span style="font-size:10px;font-weight:700;color:#5b7cae">Profiles:</span>';
+  if(!profs.length) h += '<span style="font-size:11px;color:#94a3b8;font-style:italic">Chua co profile</span>';
   profs.forEach(p => {
     const isActive = p.id===selId;
     h += `<div class="chip${isActive?' active':''}${p.export?' exported':''}" onclick="${isAv?`selectAvProfile('${p.id}')`:`selectGenProfile('${type}','${p.id}')`}">
@@ -970,15 +1039,19 @@ function rebuildNoUtm(){
 // ══════════════════════════════════════════════
 // TAB / ACCORDION
 // ══════════════════════════════════════════════
-function showTab(id){
-  ['profiles','policy','optimize'].forEach(t=>document.getElementById('tab-'+t).style.display=t===id?'block':'none');
-  document.querySelectorAll('.tb').forEach((el,i)=>el.classList.toggle('active',['profiles','policy','optimize'][i]===id));
+function showTab(id){ navTo(id); }
+function tac(id){}
+function navTo(id){
+  const SEC=['av','app','wf','dns','policy','optimize'];
+  SEC.forEach(t=>{
+    const p=document.getElementById('panel-'+t);
+    if(p) p.style.display = t===id ? 'block' : 'none';
+    const n=document.getElementById('nav-'+t);
+    if(n) n.classList.toggle('active',t===id);
+  });
   if(id==='policy'){refreshPolDropdowns();buildPolTable();}
+  if(id==='optimize'){rebuildDns7();}
   render();
-}
-function tac(id){
-  document.getElementById('body-'+id).classList.toggle('open');
-  document.getElementById('arr-'+id).classList.toggle('open');
 }
 
 // ══════════════════════════════════════════════
@@ -1172,14 +1245,24 @@ function genSecs(){
 }
 
 function render(){
-  const secs=genSecs();
-  G('cli-meta').textContent=`${secs.length} phan — ${secs.reduce((a,s)=>a+s.cli.split('\n').length,0)} dong`;
-  if(!secs.length){G('cli-body').innerHTML='<div class="cli-empty">Them profiles va policies de bat dau sinh CLI.</div>';return;}
+  const _secs = genSecs();
+  const _meta = document.getElementById('cli-meta');
+  const _cnt  = document.getElementById('cli-line-count');
+  const _lines = _secs.reduce((a,s)=>a+s.cli.split('\n').length,0);
+  if(_meta) _meta.textContent = _secs.length+' phan — '+_lines+' dong';
+  if(_cnt)  _cnt.textContent  = _secs.length+' phan';
+  _innerRender(_secs);
+}
+function _innerRender(secs){
+  if(!secs.length){
+    G('cli-body').innerHTML='<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:32px;text-align:center"><p style="color:rgba(255,255,255,.2);font-family:monospace;font-size:12px">Them profiles va policies<br>de bat dau sinh CLI</p></div>';
+    return;
+  }
   G('cli-body').innerHTML=secs.map((s,i)=>`
     <div class="cli-sec">
-      <div class="cli-sec-hdr">
-        <span class="cli-sec-name">${s.name}</span>
-        <button class="btn-cp" onclick="cpSec(${i})">Copy</button>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <span style="font-size:10px;font-weight:700;color:#8b949e;font-family:'Courier New',monospace">${s.name}</span>
+        <button style="font-size:10px;padding:2px 9px;border:1px solid #30363d;border-radius:4px;background:transparent;color:#8b949e;cursor:pointer" onmouseover="this.style.color='#3fb950';this.style.borderColor='#3fb950'" onmouseout="this.style.color='#8b949e';this.style.borderColor='#30363d'" onclick="cpSec(${i})">Copy</button>
       </div>
       <pre>${hl(s.cli)}</pre>
     </div>`).join('');
@@ -1205,7 +1288,12 @@ function copyAll(){
 }
 
 // Init
-rebuildNoUtm();rebuildDns7();render();
+function bulkExport(type, on) {
+  const profs = type==='av' ? avProfiles : TYPE_DATA[type].profiles();
+  profs.forEach(p => { p.export = on; });
+  rebuildPM(type); render();
+}
+rebuildNoUtm(); rebuildDns7(); navTo('av'); render();
 </script>
 </body>
 </html>
